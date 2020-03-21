@@ -1,0 +1,55 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="..\dependencies\imgui\imgui.cpp">
+      <Filter>dependencies\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dependencies\imgui\imgui_demo.cpp">
+      <Filter>dependencies\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dependencies\imgui\imgui_draw.cpp">
+      <Filter>dependencies\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dependencies\imgui\imgui_widgets.cpp">
+      <Filter>dependencies\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dependencies\patterns\Hooking.Patterns.cpp">
+      <Filter>dependencies\patterns</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="dependencies">
+      <UniqueIdentifier>{b48061e1-85b5-4953-bff1-f6a900ae6848}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="dependencies\imgui">
+      <UniqueIdentifier>{cd2ff4ce-1548-4cc6-9f1d-8b07c5c5ae1b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="dependencies\patterns">
+      <UniqueIdentifier>{7a8351da-d078-4941-ad67-3f95d2f6d926}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\dependencies\imgui\imconfig.h">
+      <Filter>dependencies\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dependencies\imgui\imgui.h">
+      <Filter>dependencies\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dependencies\imgui\imgui_internal.h">
+      <Filter>dependencies\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dependencies\imgui\imstb_rectpack.h">
+      <Filter>dependencies\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dependencies\imgui\imstb_textedit.h">
+      <Filter>dependencies\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dependencies\imgui\imstb_truetype.h">
+      <Filter>dependencies\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dependencies\patterns\Hooking.Patterns.h">
+      <Filter>dependencies\patterns</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

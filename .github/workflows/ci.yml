@@ -1,0 +1,32 @@
+name: CI
+
+on: [push]
+
+jobs:
+  check-formatting:
+    name: Check Code Formatting
+    runs-on: windows-2019
+
+    steps:
+      - uses: actions/checkout@v1
+      - name: Check
+        run: .\tools\codeformat.ps1 -Check
+
+  build:
+    name: Build
+    runs-on: windows-2019
+
+    steps:
+      - uses: actions/checkout@v1
+        with:
+          submodules: true
+      - name: Build Debug
+        shell: cmd
+        run: |
+          call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars32.bat"
+          msbuild src/Widgets.sln -m -p:Configuration=Debug -p:Platform=x86
+      - name: Build Release
+        shell: cmd
+        run: |
+          call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars32.bat"
+          msbuild src/Widgets.sln -m -p:Configuration=Release -p:Platform=x86
