@@ -18,6 +18,22 @@
       <Filter>dependencies\patterns</Filter>
     </ClCompile>
     <ClCompile Include="D3D9Hook.cpp" />
+    <ClCompile Include="D3D9ImGui.cpp" />
+    <ClCompile Include="..\dependencies\minhook\src\buffer.c">
+      <Filter>dependencies\minhook</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dependencies\minhook\src\hook.c">
+      <Filter>dependencies\minhook</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dependencies\minhook\src\trampoline.c">
+      <Filter>dependencies\minhook</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dependencies\minhook\src\hde\hde32.c">
+      <Filter>dependencies\minhook</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dependencies\minhook\src\hde\hde64.c">
+      <Filter>dependencies\minhook</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="dependencies">
@@ -28,6 +44,9 @@
     </Filter>
     <Filter Include="dependencies\patterns">
       <UniqueIdentifier>{7a8351da-d078-4941-ad67-3f95d2f6d926}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="dependencies\minhook">
+      <UniqueIdentifier>{a6cd2aae-68b0-4db0-b619-7f7b69d65df4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -53,5 +72,30 @@
       <Filter>dependencies\patterns</Filter>
     </ClInclude>
     <ClInclude Include="D3D9Hook.h" />
+    <ClInclude Include="D3D9ImGui.h" />
+    <ClInclude Include="..\dependencies\minhook\src\buffer.h">
+      <Filter>dependencies\minhook</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dependencies\minhook\src\trampoline.h">
+      <Filter>dependencies\minhook</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dependencies\minhook\src\hde\hde32.h">
+      <Filter>dependencies\minhook</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dependencies\minhook\src\hde\hde64.h">
+      <Filter>dependencies\minhook</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dependencies\minhook\src\hde\pstdint.h">
+      <Filter>dependencies\minhook</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dependencies\minhook\src\hde\table32.h">
+      <Filter>dependencies\minhook</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dependencies\minhook\src\hde\table64.h">
+      <Filter>dependencies\minhook</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dependencies\minhook\include\MinHook.h">
+      <Filter>dependencies\minhook</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

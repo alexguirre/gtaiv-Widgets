@@ -1,9 +1,12 @@
 #include "D3D9Hook.h"
+#include "D3D9ImGui.h"
 #include <Hooking.Patterns.h>
+#include <MinHook.h>
 #include <Windows.h>
 #include <algorithm>
 #include <array>
 #include <cstdint>
+#include <imgui.h>
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/spdlog.h>
 
@@ -81,6 +84,7 @@ LABEL_6:
 	return &gNatives[v2];
 }
 
+static size_t Indent{ 0 };
 static constexpr uint32_t hashINIT_DEBUG_WIDGETS{ 0x73E911E8 };
 static void cmdINIT_DEBUG_WIDGETS(scrNativeCallContext& ctx)
 {
@@ -90,7 +94,9 @@ static void cmdINIT_DEBUG_WIDGETS(scrNativeCallContext& ctx)
 static constexpr uint32_t hashCREATE_WIDGET_GROUP{ 0x558C4259 };
 static void cmdCREATE_WIDGET_GROUP(scrNativeCallContext& ctx)
 {
-	spdlog::debug("CREATE_WIDGET_GROUP(\"{}\") [args:{}]",
+	spdlog::debug("{:{}}CREATE_WIDGET_GROUP(\"{}\") [args:{}]",
+				  "",
+				  (Indent++) * 4,
 				  ctx.GetArgument<const char*>(0),
 				  ctx.GetArgumentCount());
 
@@ -100,13 +106,15 @@ static void cmdCREATE_WIDGET_GROUP(scrNativeCallContext& ctx)
 static constexpr uint32_t hashEND_WIDGET_GROUP{ 0x6F760759 };
 static void cmdEND_WIDGET_GROUP(scrNativeCallContext& ctx)
 {
-	spdlog::debug("END_WIDGET_GROUP() [args:{}]", ctx.GetArgumentCount());
+	spdlog::debug("{:{}}END_WIDGET_GROUP() [args:{}]", "", (--Indent) * 4, ctx.GetArgumentCount());
 }
 
 static constexpr uint32_t hashADD_WIDGET_SLIDER{ 0x4A904476 };
 static void cmdADD_WIDGET_SLIDER(scrNativeCallContext& ctx)
 {
-	spdlog::debug("ADD_WIDGET_SLIDER(\"{}\", ref {}, {}, {}, {}) [args:{}]",
+	spdlog::debug("{:{}}ADD_WIDGET_SLIDER(\"{}\", ref {}, {}, {}, {}) [args:{}]",
+				  "",
+				  (Indent)*4,
 				  ctx.GetArgument<const char*>(0),
 				  ctx.GetArgument<void*>(1),
 				  ctx.GetArgument<int>(2),
@@ -120,7 +128,9 @@ static void cmdADD_WIDGET_SLIDER(scrNativeCallContext& ctx)
 static constexpr uint32_t hashADD_WIDGET_FLOAT_SLIDER{ 0x6F9256DF };
 static void cmdADD_WIDGET_FLOAT_SLIDER(scrNativeCallContext& ctx)
 {
-	spdlog::debug("ADD_WIDGET_FLOAT_SLIDER(\"{}\", ref {}, {}, {}, {}) [args:{}]",
+	spdlog::debug("{:{}}ADD_WIDGET_FLOAT_SLIDER(\"{}\", ref {}, {}, {}, {}) [args:{}]",
+				  "",
+				  (Indent)*4,
 				  ctx.GetArgument<const char*>(0),
 				  ctx.GetArgument<void*>(1),
 				  ctx.GetArgument<float>(2),
@@ -134,7 +144,9 @@ static void cmdADD_WIDGET_FLOAT_SLIDER(scrNativeCallContext& ctx)
 static constexpr uint32_t hashADD_WIDGET_READ_ONLY{ 0x4A2E3BCA };
 static void cmdADD_WIDGET_READ_ONLY(scrNativeCallContext& ctx)
 {
-	spdlog::debug("ADD_WIDGET_READ_ONLY(\"{}\", ref {}) [args:{}]",
+	spdlog::debug("{:{}}ADD_WIDGET_READ_ONLY(\"{}\", ref {}) [args:{}]",
+				  "",
+				  (Indent)*4,
 				  ctx.GetArgument<const char*>(0),
 				  ctx.GetArgument<void*>(1),
 				  ctx.GetArgumentCount());
@@ -145,7 +157,9 @@ static void cmdADD_WIDGET_READ_ONLY(scrNativeCallContext& ctx)
 static constexpr uint32_t hashADD_WIDGET_FLOAT_READ_ONLY{ 0x4C8A7614 };
 static void cmdADD_WIDGET_FLOAT_READ_ONLY(scrNativeCallContext& ctx)
 {
-	spdlog::debug("ADD_WIDGET_FLOAT_READ_ONLY(\"{}\", ref {}) [args:{}]",
+	spdlog::debug("{:{}}ADD_WIDGET_FLOAT_READ_ONLY(\"{}\", ref {}) [args:{}]",
+				  "",
+				  (Indent)*4,
 				  ctx.GetArgument<const char*>(0),
 				  ctx.GetArgument<void*>(1),
 				  ctx.GetArgumentCount());
@@ -156,7 +170,9 @@ static void cmdADD_WIDGET_FLOAT_READ_ONLY(scrNativeCallContext& ctx)
 static constexpr uint32_t hashADD_WIDGET_TOGGLE{ 0x66F47727 };
 static void cmdADD_WIDGET_TOGGLE(scrNativeCallContext& ctx)
 {
-	spdlog::debug("ADD_WIDGET_TOGGLE(\"{}\", ref {}) [args:{}]",
+	spdlog::debug("{:{}}ADD_WIDGET_TOGGLE(\"{}\", ref {}) [args:{}]",
+				  "",
+				  (Indent)*4,
 				  ctx.GetArgument<const char*>(0),
 				  ctx.GetArgument<void*>(1),
 				  ctx.GetArgumentCount());
@@ -167,7 +183,9 @@ static void cmdADD_WIDGET_TOGGLE(scrNativeCallContext& ctx)
 static constexpr uint32_t hashADD_WIDGET_STRING{ 0x27D20F21 };
 static void cmdADD_WIDGET_STRING(scrNativeCallContext& ctx)
 {
-	spdlog::debug("ADD_WIDGET_STRING(\"{}\") [args:{}]",
+	spdlog::debug("{:{}}ADD_WIDGET_STRING(\"{}\") [args:{}]",
+				  "",
+				  (Indent)*4,
 				  ctx.GetArgument<const char*>(0),
 				  ctx.GetArgumentCount());
 
@@ -205,13 +223,18 @@ static void cmdDOES_WIDGET_GROUP_EXIST(scrNativeCallContext& ctx)
 static constexpr uint32_t hashSTART_NEW_WIDGET_COMBO{ 0x3893A3A };
 static void cmdSTART_NEW_WIDGET_COMBO(scrNativeCallContext& ctx)
 {
-	spdlog::debug("START_NEW_WIDGET_COMBO() [args:{}]", ctx.GetArgumentCount());
+	spdlog::debug("{:{}}START_NEW_WIDGET_COMBO() [args:{}]",
+				  "",
+				  (Indent++) * 4,
+				  ctx.GetArgumentCount());
 }
 
 static constexpr uint32_t hashADD_TO_WIDGET_COMBO{ 0x4F0D4AC7 };
 static void cmdADD_TO_WIDGET_COMBO(scrNativeCallContext& ctx)
 {
-	spdlog::debug("ADD_TO_WIDGET_COMBO(\"{}\") [args:{}]",
+	spdlog::debug("{:{}}ADD_TO_WIDGET_COMBO(\"{}\") [args:{}]",
+				  "",
+				  (Indent)*4,
 				  ctx.GetArgument<const char*>(0),
 				  ctx.GetArgumentCount());
 }
@@ -219,7 +242,9 @@ static void cmdADD_TO_WIDGET_COMBO(scrNativeCallContext& ctx)
 static constexpr uint32_t hashFINISH_WIDGET_COMBO{ 0x2CCA0D6A };
 static void cmdFINISH_WIDGET_COMBO(scrNativeCallContext& ctx)
 {
-	spdlog::debug("FINISH_WIDGET_COMBO(\"{}\", ref {}) [args:{}]",
+	spdlog::debug("{:{}}FINISH_WIDGET_COMBO(\"{}\", ref {}) [args:{}]",
+				  "",
+				  (--Indent) * 4,
 				  ctx.GetArgument<const char*>(0),
 				  ctx.GetArgument<void*>(1),
 				  ctx.GetArgumentCount());
@@ -230,7 +255,9 @@ static void cmdFINISH_WIDGET_COMBO(scrNativeCallContext& ctx)
 static constexpr uint32_t hashADD_TEXT_WIDGET{ 0x7537050D };
 static void cmdADD_TEXT_WIDGET(scrNativeCallContext& ctx)
 {
-	spdlog::debug("ADD_TEXT_WIDGET(\"{}\") [args:{}]",
+	spdlog::debug("{:{}}ADD_TEXT_WIDGET(\"{}\") [args:{}]",
+				  "",
+				  (Indent)*4,
 				  ctx.GetArgument<const char*>(0),
 				  ctx.GetArgumentCount());
 
@@ -258,7 +285,10 @@ static void cmdSET_CONTENTS_OF_TEXT_WIDGET(scrNativeCallContext& ctx)
 
 static DWORD WINAPI Main(PVOID)
 {
+	MH_Initialize();
 	d3d9_hook::init();
+	d3d9_imgui::init();
+	MH_EnableHook(MH_ALL_HOOKS);
 
 	while (!gNativesTableSize)
 	{
@@ -295,6 +325,8 @@ static DWORD WINAPI Main(PVOID)
 		N{ hashSET_CONTENTS_OF_TEXT_WIDGET, &cmdSET_CONTENTS_OF_TEXT_WIDGET }
 	};
 	std::for_each(nativesToReplace.begin(), nativesToReplace.end(), replaceNative);
+
+	d3d9_imgui::set_callback([]() { ImGui::ShowDemoWindow(); });
 
 	return 0;
 }
