@@ -1,3 +1,4 @@
+#include "D3D9Hook.h"
 #include <Hooking.Patterns.h>
 #include <Windows.h>
 #include <algorithm>
@@ -257,6 +258,8 @@ static void cmdSET_CONTENTS_OF_TEXT_WIDGET(scrNativeCallContext& ctx)
 
 static DWORD WINAPI Main(PVOID)
 {
+	d3d9_hook::init();
+
 	while (!gNativesTableSize)
 	{
 		Sleep(5);

@@ -17,6 +17,7 @@
     <ClCompile Include="..\dependencies\patterns\Hooking.Patterns.cpp">
       <Filter>dependencies\patterns</Filter>
     </ClCompile>
+    <ClCompile Include="D3D9Hook.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="dependencies">
@@ -51,5 +52,6 @@
     <ClInclude Include="..\dependencies\patterns\Hooking.Patterns.h">
       <Filter>dependencies\patterns</Filter>
     </ClInclude>
+    <ClInclude Include="D3D9Hook.h" />
   </ItemGroup>
 </Project>

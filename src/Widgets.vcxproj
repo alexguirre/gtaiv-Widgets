@@ -97,6 +97,7 @@
     <ClCompile Include="..\dependencies\imgui\imgui_draw.cpp" />
     <ClCompile Include="..\dependencies\imgui\imgui_widgets.cpp" />
     <ClCompile Include="..\dependencies\patterns\Hooking.Patterns.cpp" />
+    <ClCompile Include="D3D9Hook.cpp" />
     <ClCompile Include="dllmain.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -107,6 +108,7 @@
     <ClInclude Include="..\dependencies\imgui\imstb_textedit.h" />
     <ClInclude Include="..\dependencies\imgui\imstb_truetype.h" />
     <ClInclude Include="..\dependencies\patterns\Hooking.Patterns.h" />
+    <ClInclude Include="D3D9Hook.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
