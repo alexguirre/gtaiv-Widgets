@@ -33,11 +33,6 @@ namespace d3d9_imgui
 			return 0;
 
 		ImGuiIO& io = ImGui::GetIO();
-		spdlog::debug("win32_wnd_proc_handler({}, {:08X}, {}, {})",
-					  reinterpret_cast<void*>(hwnd),
-					  msg,
-					  reinterpret_cast<void*>(wParam),
-					  reinterpret_cast<void*>(lParam));
 		switch (msg)
 		{
 		case WM_MOUSEWHEEL:
