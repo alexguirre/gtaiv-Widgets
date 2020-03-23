@@ -42,6 +42,42 @@ static Widget* FindWidget(WidgetId id)
 	return FindWidget(gTopLevelWidgets, id);
 }
 
+static bool DeleteWidget(std::vector<Widget>& widgets, WidgetId id, bool onlyIfGroup)
+{
+	size_t toDeleteIndex = -1;
+	for (size_t i = 0; i < widgets.size(); i++)
+	{
+		Widget& w = widgets[i];
+		if (w.Id() == id && (onlyIfGroup == (w.Type() == WidgetType::Group)))
+		{
+			toDeleteIndex = i;
+			break;
+		}
+		else if (w.Type() == WidgetType::Group)
+		{
+			if (DeleteWidget(std::get<WidgetGroup>(w.Info()).Children, id, onlyIfGroup))
+			{
+				return true;
+			}
+		}
+	}
+
+	if (toDeleteIndex != -1)
+	{
+		widgets.erase(widgets.begin() + toDeleteIndex);
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+static bool DeleteWidget(WidgetId id, bool onlyIfGroup)
+{
+	return DeleteWidget(gTopLevelWidgets, id, onlyIfGroup);
+}
+
 WidgetId WidgetManager::CreateGroup(std::string label)
 {
 	std::scoped_lock lock{ gWidgetsMutex };
@@ -163,14 +199,18 @@ void WidgetManager::SetTextContents(WidgetId id, std::string value)
 	}
 }
 
-bool WidgetManager::DeleteGroup(WidgetId id) // TODO: WidgetManager::DeleteGroup
+bool WidgetManager::DeleteGroup(WidgetId id)
 {
-	return false;
+	std::scoped_lock lock{ gWidgetsMutex };
+
+	return DeleteWidget(id, true);
 }
 
-bool WidgetManager::Delete(WidgetId id) // TODO: WidgetManager::Delete
+bool WidgetManager::Delete(WidgetId id)
 {
-	return false;
+	std::scoped_lock lock{ gWidgetsMutex };
+
+	return DeleteWidget(id, false);
 }
 
 bool WidgetManager::DoesGroupExist(WidgetId id)
