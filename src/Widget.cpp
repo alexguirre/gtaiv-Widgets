@@ -1,6 +1,8 @@
 #include "Widget.h"
+#include <algorithm>
 #include <imgui.h>
 #include <imgui_internal.h>
+#include <type_traits>
 #include <utility>
 
 namespace ImGui
@@ -54,6 +56,76 @@ namespace ImGui
 						 InputTextCallback,
 						 &cb_user_data);
 	}
+
+	/// Combines a Slider with +/- buttons, based on ImGui::InputScalar
+	template<class T>
+	static bool InputSlider(const char* label, T* v, T min, T max, T step)
+	{
+		ImGuiWindow* window = GetCurrentWindow();
+		if (window->SkipItems)
+			return false;
+
+		ImGuiContext& g = *GImGui;
+		ImGuiStyle& style = g.Style;
+
+		const float buttonSide = GetFrameHeight();
+		const ImVec2 buttonSize{ buttonSide, buttonSide };
+
+		BeginGroup();
+		PushID(v);
+		SetNextItemWidth(
+			ImMax(1.0f, CalcItemWidth() - (buttonSide + style.ItemInnerSpacing.x) * 2));
+		bool valueChanged = false;
+		if constexpr (std::is_same_v<T, float>)
+		{
+			float tmp = *v;
+			if (SliderFloat("", &tmp, min, max))
+			{
+				*v = std::clamp(tmp, min, max);
+				valueChanged = true;
+			}
+		}
+		else if constexpr (std::is_same_v<T, int>)
+		{
+			int tmp = *v;
+			if (SliderInt("", &tmp, min, max))
+			{
+				*v = std::clamp(tmp, min, max);
+				valueChanged = true;
+			}
+		}
+
+		// Step buttons
+		const ImVec2 backupFramePadding = style.FramePadding;
+		style.FramePadding.x = style.FramePadding.y;
+		constexpr ImGuiButtonFlags buttonFlags =
+			ImGuiButtonFlags_Repeat | ImGuiButtonFlags_DontClosePopups;
+		SameLine(0, style.ItemInnerSpacing.x);
+		if (ButtonEx("-", buttonSize, buttonFlags | (*v == min ? ImGuiButtonFlags_Disabled : 0)))
+		{
+			*v = std::clamp(*v - step, min, max);
+			valueChanged = true;
+		}
+		SameLine(0, style.ItemInnerSpacing.x);
+		if (ButtonEx("+", buttonSize, buttonFlags | (*v == max ? ImGuiButtonFlags_Disabled : 0)))
+		{
+			*v = std::clamp(*v + step, min, max);
+			valueChanged = true;
+		}
+
+		const char* labelEnd = FindRenderedTextEnd(label);
+		if (label != labelEnd)
+		{
+			SameLine(0, style.ItemInnerSpacing.x);
+			TextEx(label, labelEnd);
+		}
+		style.FramePadding = backupFramePadding;
+
+		PopID();
+		EndGroup();
+
+		return valueChanged;
+	}
 }
 
 // helper for std::visit
@@ -72,78 +144,79 @@ Widget::Widget(WidgetId id, WidgetInfo info)
 
 void Widget::Draw()
 {
-	std::visit(
-		overloaded{
-			[](const auto&) {},
-			[](WidgetGroup& w) {
-				const bool isChild = ImGui::GetCurrentContext()->CurrentWindowStack.Size > 1;
-				if (isChild)
-				{
-					if (ImGui::CollapsingHeader(w.Label.c_str(), &w.Open))
-					{
-						for (Widget& c : w.Children)
-						{
-							c.Draw();
-						}
-					}
-				}
-				else if (w.Open)
-				{
-					if (ImGui::Begin(w.Label.c_str(), &w.Open))
-					{
-						for (Widget& c : w.Children)
-						{
-							c.Draw();
-						}
-					}
-					ImGui::End();
-				}
-			},
-			[](const WidgetSlider& w) { ImGui::SliderInt(w.Label.c_str(), w.Value, w.Min, w.Max); },
-			[](const WidgetFloatSlider& w) {
-				ImGui::SliderFloat(w.Label.c_str(), w.Value, w.Min, w.Max);
-			},
-			[](const WidgetReadOnly& w) {
-				ImGui::InputInt(w.Label.c_str(),
-								const_cast<int*>(w.Value),
-								0,
-								0,
-								ImGuiInputTextFlags_ReadOnly);
-			},
-			[](const WidgetFloatReadOnly& w) {
-				ImGui::InputFloat(w.Label.c_str(),
-								  const_cast<float*>(w.Value),
-								  0.0f,
-								  0.0f,
-								  0,
-								  ImGuiInputTextFlags_ReadOnly);
-			},
-			[](const WidgetToggle& w) { ImGui::Checkbox(w.Label.c_str(), w.Value); },
-			[](const WidgetString& w) { ImGui::Text(w.Label.c_str()); },
-			[](const WidgetCombo& w) {
-				if (ImGui::BeginCombo(w.Label.c_str(),
-									  (*w.Selected >= 0 && *w.Selected < w.Options.size()) ?
-										  w.Options[*w.Selected].c_str() :
-										  ""))
-				{
-					for (size_t i = 0; i < w.Options.size(); i++)
-					{
-						ImGui::PushID(i);
-						const bool isSelected = (i == *w.Selected);
-						if (ImGui::Selectable(w.Options[i].c_str(), isSelected))
-						{
-							*w.Selected = static_cast<int>(i);
-						}
-						if (isSelected)
-							ImGui::SetItemDefaultFocus();
-						ImGui::PopID();
-					}
-					ImGui::EndCombo();
-				}
-			},
-			[](WidgetText& w) { ImGui::InputText(w.Label.c_str(), &w.Value); },
-		},
-		mInfo);
+	std::visit(overloaded{
+				   [](const auto&) {},
+				   [](WidgetGroup& w) {
+					   const bool isChild = ImGui::GetCurrentContext()->CurrentWindowStack.Size > 1;
+					   if (isChild)
+					   {
+						   if (ImGui::CollapsingHeader(w.Label.c_str(), &w.Open))
+						   {
+							   for (Widget& c : w.Children)
+							   {
+								   c.Draw();
+							   }
+						   }
+					   }
+					   else if (w.Open)
+					   {
+						   if (ImGui::Begin(w.Label.c_str(), &w.Open))
+						   {
+							   for (Widget& c : w.Children)
+							   {
+								   c.Draw();
+							   }
+						   }
+						   ImGui::End();
+					   }
+				   },
+				   [](const WidgetSlider& w) {
+					   ImGui::InputSlider<int>(w.Label.c_str(), w.Value, w.Min, w.Max, w.Step);
+				   },
+				   [](const WidgetFloatSlider& w) {
+					   ImGui::InputSlider<float>(w.Label.c_str(), w.Value, w.Min, w.Max, w.Step);
+				   },
+				   [](const WidgetReadOnly& w) {
+					   ImGui::InputInt(w.Label.c_str(),
+									   const_cast<int*>(w.Value),
+									   0,
+									   0,
+									   ImGuiInputTextFlags_ReadOnly);
+				   },
+				   [](const WidgetFloatReadOnly& w) {
+					   ImGui::InputFloat(w.Label.c_str(),
+										 const_cast<float*>(w.Value),
+										 0.0f,
+										 0.0f,
+										 0,
+										 ImGuiInputTextFlags_ReadOnly);
+				   },
+				   [](const WidgetToggle& w) { ImGui::Checkbox(w.Label.c_str(), w.Value); },
+				   [](const WidgetString& w) { ImGui::Text(w.Label.c_str()); },
+				   [](const WidgetCombo& w) {
+					   if (ImGui::BeginCombo(w.Label.c_str(),
+											 (*w.Selected >= 0 && *w.Selected < w.Options.size()) ?
+												 w.Options[*w.Selected].c_str() :
+												 ""))
+					   {
+						   for (size_t i = 0; i < w.Options.size(); i++)
+						   {
+							   ImGui::PushID(i);
+							   const bool isSelected = (i == *w.Selected);
+							   if (ImGui::Selectable(w.Options[i].c_str(), isSelected))
+							   {
+								   *w.Selected = static_cast<int>(i);
+							   }
+							   if (isSelected)
+								   ImGui::SetItemDefaultFocus();
+							   ImGui::PopID();
+						   }
+						   ImGui::EndCombo();
+					   }
+				   },
+				   [](WidgetText& w) { ImGui::InputText(w.Label.c_str(), &w.Value); },
+			   },
+			   mInfo);
 }
 
 WidgetType Widget::GetInfoType(const WidgetInfo& info)

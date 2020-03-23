@@ -34,9 +34,7 @@ struct WidgetSliderBase
 	T* Value{ nullptr };
 	T Min{ std::numeric_limits<T>::min() };
 	T Max{ std::numeric_limits<T>::max() };
-	// ImGui does not have a step parameter for slider widgets,
-	// though the game scripts provide a step value
-	// T Step{ 1 };
+	T Step{ 1 };
 };
 
 using WidgetSlider = WidgetSliderBase<int>;

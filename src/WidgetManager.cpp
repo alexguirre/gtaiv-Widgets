@@ -61,26 +61,22 @@ void WidgetManager::EndGroup()
 	}
 }
 
-WidgetId
-WidgetManager::AddSlider(std::string label, int* v, int min, int max, [[maybe_unused]] int step)
+WidgetId WidgetManager::AddSlider(std::string label, int* v, int min, int max, int step)
 {
 	std::scoped_lock lock{ gWidgetsMutex };
 
 	return gCurrentCreationStack.top()
-		->emplace_back(NextId(), WidgetSlider{ std::move(label), v, min, max })
+		->emplace_back(NextId(), WidgetSlider{ std::move(label), v, min, max, step })
 		.Id();
 }
 
-WidgetId WidgetManager::AddFloatSlider(std::string label,
-									   float* v,
-									   float min,
-									   float max,
-									   [[maybe_unused]] float step)
+WidgetId
+WidgetManager::AddFloatSlider(std::string label, float* v, float min, float max, float step)
 {
 	std::scoped_lock lock{ gWidgetsMutex };
 
 	return gCurrentCreationStack.top()
-		->emplace_back(NextId(), WidgetFloatSlider{ std::move(label), v, min, max })
+		->emplace_back(NextId(), WidgetFloatSlider{ std::move(label), v, min, max, step })
 		.Id();
 }
 
