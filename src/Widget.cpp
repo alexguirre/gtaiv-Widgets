@@ -150,7 +150,7 @@ void Widget::Draw()
 					   const bool isChild = ImGui::GetCurrentContext()->CurrentWindowStack.Size > 1;
 					   if (isChild)
 					   {
-						   if (ImGui::CollapsingHeader(w.Label.c_str(), &w.Open))
+						   if (ImGui::CollapsingHeader(w.Label.c_str()))
 						   {
 							   for (Widget& c : w.Children)
 							   {
