@@ -78,8 +78,10 @@ namespace d3d9_imgui
 		g_hWnd = (HWND)hwnd;
 		ImGuiIO& io = ImGui::GetIO();
 		io.BackendPlatformName = "imgui_impl_win32";
+		io.BackendFlags |= ImGuiBackendFlags_HasMouseCursors;
 		io.ImeWindowHandle = hwnd;
 		io.MouseDrawCursor = true;
+		io.ConfigWindowsResizeFromEdges = true;
 
 		// Keyboard mapping. ImGui will use those indices to peek into the io.KeysDown[] array that
 		// we will update during the application lifetime.
