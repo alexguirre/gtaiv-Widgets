@@ -105,6 +105,8 @@
     <ClCompile Include="D3D9Hook.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="D3D9ImGui.cpp" />
+    <ClCompile Include="Widget.cpp" />
+    <ClCompile Include="WidgetManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\dependencies\imgui\imconfig.h" />
@@ -124,6 +126,8 @@
     <ClInclude Include="..\dependencies\patterns\Hooking.Patterns.h" />
     <ClInclude Include="D3D9Hook.h" />
     <ClInclude Include="D3D9ImGui.h" />
+    <ClInclude Include="Widget.h" />
+    <ClInclude Include="WidgetManager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

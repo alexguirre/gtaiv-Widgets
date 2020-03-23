@@ -34,6 +34,8 @@
     <ClCompile Include="..\dependencies\minhook\src\hde\hde64.c">
       <Filter>dependencies\minhook</Filter>
     </ClCompile>
+    <ClCompile Include="Widget.cpp" />
+    <ClCompile Include="WidgetManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="dependencies">
@@ -97,5 +99,7 @@
     <ClInclude Include="..\dependencies\minhook\include\MinHook.h">
       <Filter>dependencies\minhook</Filter>
     </ClInclude>
+    <ClInclude Include="Widget.h" />
+    <ClInclude Include="WidgetManager.h" />
   </ItemGroup>
 </Project>

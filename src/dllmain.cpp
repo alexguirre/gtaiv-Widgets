@@ -1,5 +1,6 @@
 #include "D3D9Hook.h"
 #include "D3D9ImGui.h"
+#include "WidgetManager.h"
 #include <Hooking.Patterns.h>
 #include <MinHook.h>
 #include <Windows.h>
@@ -100,13 +101,15 @@ static void cmdCREATE_WIDGET_GROUP(scrNativeCallContext& ctx)
 				  ctx.GetArgument<const char*>(0),
 				  ctx.GetArgumentCount());
 
-	ctx.SetResult(0, 0);
+	ctx.SetResult(0, WidgetManager::CreateGroup(ctx.GetArgument<const char*>(0)));
 }
 
 static constexpr uint32_t hashEND_WIDGET_GROUP{ 0x6F760759 };
 static void cmdEND_WIDGET_GROUP(scrNativeCallContext& ctx)
 {
 	spdlog::debug("{:{}}END_WIDGET_GROUP() [args:{}]", "", (--Indent) * 4, ctx.GetArgumentCount());
+
+	WidgetManager::EndGroup();
 }
 
 static constexpr uint32_t hashADD_WIDGET_SLIDER{ 0x4A904476 };
@@ -122,7 +125,12 @@ static void cmdADD_WIDGET_SLIDER(scrNativeCallContext& ctx)
 				  ctx.GetArgument<int>(4),
 				  ctx.GetArgumentCount());
 
-	ctx.SetResult(0, 0);
+	ctx.SetResult(0,
+				  WidgetManager::AddSlider(ctx.GetArgument<const char*>(0),
+										   ctx.GetArgument<int*>(1),
+										   ctx.GetArgument<int>(2),
+										   ctx.GetArgument<int>(3),
+										   ctx.GetArgument<int>(4)));
 }
 
 static constexpr uint32_t hashADD_WIDGET_FLOAT_SLIDER{ 0x6F9256DF };
@@ -138,7 +146,12 @@ static void cmdADD_WIDGET_FLOAT_SLIDER(scrNativeCallContext& ctx)
 				  ctx.GetArgument<float>(4),
 				  ctx.GetArgumentCount());
 
-	ctx.SetResult(0, 0);
+	ctx.SetResult(0,
+				  WidgetManager::AddFloatSlider(ctx.GetArgument<const char*>(0),
+												ctx.GetArgument<float*>(1),
+												ctx.GetArgument<float>(2),
+												ctx.GetArgument<float>(3),
+												ctx.GetArgument<float>(4)));
 }
 
 static constexpr uint32_t hashADD_WIDGET_READ_ONLY{ 0x4A2E3BCA };
@@ -151,7 +164,9 @@ static void cmdADD_WIDGET_READ_ONLY(scrNativeCallContext& ctx)
 				  ctx.GetArgument<void*>(1),
 				  ctx.GetArgumentCount());
 
-	ctx.SetResult(0, 0);
+	ctx.SetResult(
+		0,
+		WidgetManager::AddReadOnly(ctx.GetArgument<const char*>(0), ctx.GetArgument<int*>(1)));
 }
 
 static constexpr uint32_t hashADD_WIDGET_FLOAT_READ_ONLY{ 0x4C8A7614 };
@@ -164,7 +179,9 @@ static void cmdADD_WIDGET_FLOAT_READ_ONLY(scrNativeCallContext& ctx)
 				  ctx.GetArgument<void*>(1),
 				  ctx.GetArgumentCount());
 
-	ctx.SetResult(0, 0);
+	ctx.SetResult(0,
+				  WidgetManager::AddFloatReadOnly(ctx.GetArgument<const char*>(0),
+												  ctx.GetArgument<float*>(1)));
 }
 
 static constexpr uint32_t hashADD_WIDGET_TOGGLE{ 0x66F47727 };
@@ -177,7 +194,9 @@ static void cmdADD_WIDGET_TOGGLE(scrNativeCallContext& ctx)
 				  ctx.GetArgument<void*>(1),
 				  ctx.GetArgumentCount());
 
-	ctx.SetResult(0, 0);
+	ctx.SetResult(
+		0,
+		WidgetManager::AddToggle(ctx.GetArgument<const char*>(0), ctx.GetArgument<bool*>(1)));
 }
 
 static constexpr uint32_t hashADD_WIDGET_STRING{ 0x27D20F21 };
@@ -189,7 +208,7 @@ static void cmdADD_WIDGET_STRING(scrNativeCallContext& ctx)
 				  ctx.GetArgument<const char*>(0),
 				  ctx.GetArgumentCount());
 
-	ctx.SetResult(0, 0);
+	ctx.SetResult(0, WidgetManager::AddString(ctx.GetArgument<const char*>(0)));
 }
 
 static constexpr uint32_t hashDELETE_WIDGET_GROUP{ 0x17D72833 };
@@ -199,7 +218,7 @@ static void cmdDELETE_WIDGET_GROUP(scrNativeCallContext& ctx)
 				  ctx.GetArgument<int>(0),
 				  ctx.GetArgumentCount());
 
-	ctx.SetResult(0, 0);
+	ctx.SetResult(0, WidgetManager::DeleteGroup(ctx.GetArgument<WidgetId>(0)));
 }
 
 static constexpr uint32_t hashDELETE_WIDGET{ 0x267D5146 };
@@ -207,7 +226,7 @@ static void cmdDELETE_WIDGET(scrNativeCallContext& ctx)
 {
 	spdlog::debug("DELETE_WIDGET({}) [args:{}]", ctx.GetArgument<int>(0), ctx.GetArgumentCount());
 
-	ctx.SetResult(0, 0);
+	ctx.SetResult(0, WidgetManager::Delete(ctx.GetArgument<WidgetId>(0)));
 }
 
 static constexpr uint32_t hashDOES_WIDGET_GROUP_EXIST{ 0x3AAF5BE5 };
@@ -217,7 +236,7 @@ static void cmdDOES_WIDGET_GROUP_EXIST(scrNativeCallContext& ctx)
 				  ctx.GetArgument<int>(0),
 				  ctx.GetArgumentCount());
 
-	ctx.SetResult(0, 0);
+	ctx.SetResult(0, WidgetManager::DoesGroupExist(ctx.GetArgument<WidgetId>(0)));
 }
 
 static constexpr uint32_t hashSTART_NEW_WIDGET_COMBO{ 0x3893A3A };
@@ -227,6 +246,8 @@ static void cmdSTART_NEW_WIDGET_COMBO(scrNativeCallContext& ctx)
 				  "",
 				  (Indent++) * 4,
 				  ctx.GetArgumentCount());
+
+	WidgetManager::StartNewCombo();
 }
 
 static constexpr uint32_t hashADD_TO_WIDGET_COMBO{ 0x4F0D4AC7 };
@@ -237,6 +258,8 @@ static void cmdADD_TO_WIDGET_COMBO(scrNativeCallContext& ctx)
 				  (Indent)*4,
 				  ctx.GetArgument<const char*>(0),
 				  ctx.GetArgumentCount());
+
+	WidgetManager::AddToCombo(ctx.GetArgument<const char*>(0));
 }
 
 static constexpr uint32_t hashFINISH_WIDGET_COMBO{ 0x2CCA0D6A };
@@ -249,7 +272,9 @@ static void cmdFINISH_WIDGET_COMBO(scrNativeCallContext& ctx)
 				  ctx.GetArgument<void*>(1),
 				  ctx.GetArgumentCount());
 
-	ctx.SetResult(0, 0);
+	ctx.SetResult(
+		0,
+		WidgetManager::FinishCombo(ctx.GetArgument<const char*>(0), ctx.GetArgument<int*>(1)));
 }
 
 static constexpr uint32_t hashADD_TEXT_WIDGET{ 0x7537050D };
@@ -261,7 +286,7 @@ static void cmdADD_TEXT_WIDGET(scrNativeCallContext& ctx)
 				  ctx.GetArgument<const char*>(0),
 				  ctx.GetArgumentCount());
 
-	ctx.SetResult(0, 0);
+	ctx.SetResult(0, WidgetManager::AddText(ctx.GetArgument<const char*>(0)));
 }
 
 static constexpr uint32_t hashGET_CONTENTS_OF_TEXT_WIDGET{ 0x742E3376 };
@@ -271,7 +296,7 @@ static void cmdGET_CONTENTS_OF_TEXT_WIDGET(scrNativeCallContext& ctx)
 				  ctx.GetArgument<int>(0),
 				  ctx.GetArgumentCount());
 
-	ctx.SetResult(0, "empty");
+	ctx.SetResult(0, WidgetManager::GetTextContents(ctx.GetArgument<WidgetId>(0)));
 }
 
 static constexpr uint32_t hashSET_CONTENTS_OF_TEXT_WIDGET{ 0x6B9C6127 };
@@ -281,6 +306,8 @@ static void cmdSET_CONTENTS_OF_TEXT_WIDGET(scrNativeCallContext& ctx)
 				  ctx.GetArgument<int>(0),
 				  ctx.GetArgument<const char*>(1),
 				  ctx.GetArgumentCount());
+
+	WidgetManager::SetTextContents(ctx.GetArgument<WidgetId>(0), ctx.GetArgument<const char*>(1));
 }
 
 static DWORD WINAPI Main(PVOID)
@@ -326,7 +353,7 @@ static DWORD WINAPI Main(PVOID)
 	};
 	std::for_each(nativesToReplace.begin(), nativesToReplace.end(), replaceNative);
 
-	d3d9_imgui::set_callback([]() { ImGui::ShowDemoWindow(); });
+	d3d9_imgui::set_callback([]() { WidgetManager::Draw(); });
 
 	return 0;
 }
