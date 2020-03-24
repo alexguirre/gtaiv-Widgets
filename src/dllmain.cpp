@@ -313,18 +313,23 @@ static void cmdSET_CONTENTS_OF_TEXT_WIDGET(scrNativeCallContext& ctx)
 	WidgetManager::SetTextContents(ctx.GetArgument<WidgetId>(0), ctx.GetArgument<const char*>(1));
 }
 
-// TODO: some way to toggle debug keyboard
-static void fixIS_KEYBOARD_KEY_PRESSED()
+static void ToggleDebugKeyboard(bool enable)
 {
-	hook::pattern("6A 00 FF 74 24 10 B9 ? ? ? ? 32 DB E8 ? ? ? ? 0F B6 CB")
-		.for_each_result([](const hook::pattern_match& p) {
-			uint8_t* v = p.get<uint8_t>(1);
+	static std::array<uint8_t*, 2> addresses = []() {
+		// pattern for IS_KEYBOARD_KEY_PRESSED and IS_KEYBOARD_KEY_JUST_PRESSED
+		hook::pattern p("6A 00 FF 74 24 10 B9 ? ? ? ? 32 DB E8 ? ? ? ? 0F B6 CB");
+		p.count(2);
+		return std::array{ p.get(0).get<uint8_t>(1), p.get(1).get<uint8_t>(1) };
+	}();
 
-			DWORD oldProtect;
-			VirtualProtect(v, sizeof(uint8_t), PAGE_EXECUTE_READWRITE, &oldProtect);
-			*v = 1;
-			VirtualProtect(v, sizeof(uint8_t), oldProtect, &oldProtect);
-		});
+	// TODO: modifying the code each time may not be too good
+	for (uint8_t* v : addresses)
+	{
+		DWORD oldProtect;
+		VirtualProtect(v, sizeof(uint8_t), PAGE_EXECUTE_READWRITE, &oldProtect);
+		*v = enable ? 1 : 0;
+		VirtualProtect(v, sizeof(uint8_t), oldProtect, &oldProtect);
+	}
 }
 
 static DWORD WINAPI Main(PVOID)
@@ -334,8 +339,6 @@ static DWORD WINAPI Main(PVOID)
 	d3d9_imgui::init();
 	WidgetManager::Init();
 	MH_EnableHook(MH_ALL_HOOKS);
-
-	fixIS_KEYBOARD_KEY_PRESSED();
 
 	while (!gNativesTableSize)
 	{
@@ -373,7 +376,26 @@ static DWORD WINAPI Main(PVOID)
 	};
 	std::for_each(nativesToReplace.begin(), nativesToReplace.end(), replaceNative);
 
-	d3d9_imgui::set_callback([]() { WidgetManager::Draw(); });
+	d3d9_imgui::set_callback([]() {
+		if (ImGui::Begin("Widget manager"))
+		{
+			static bool debugKeyboard = false;
+			if (ImGui::Checkbox("Debug keyboard", &debugKeyboard))
+			{
+				ToggleDebugKeyboard(debugKeyboard);
+			}
+			ImGui::Separator();
+			ImGui::TextUnformatted("Widgets");
+			if (ImGui::BeginChild("WidgetsFrame", ImVec2{ 0.0f, 0.0f }, true))
+			{
+				WidgetManager::DrawList();
+			}
+			ImGui::EndChild();
+		}
+		ImGui::End();
+
+		WidgetManager::DrawWidgets();
+	});
 
 	return 0;
 }

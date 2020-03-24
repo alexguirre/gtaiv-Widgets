@@ -25,5 +25,6 @@ public:
 	static bool Delete(WidgetId id);
 	static bool DoesGroupExist(WidgetId id);
 
-	static void Draw();
+	static void DrawList();
+	static void DrawWidgets();
 };

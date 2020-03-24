@@ -300,23 +300,24 @@ bool WidgetManager::DoesGroupExist(WidgetId id)
 	return false;
 }
 
-void WidgetManager::Draw()
+void WidgetManager::DrawList()
 {
 	std::scoped_lock lock{ gWidgetsMutex };
 
-	if (ImGui::Begin("Widget manager"))
+	for (Widget& w : gTopLevelWidgets)
 	{
-		for (Widget& w : gTopLevelWidgets)
+		if (w.Type() == WidgetType::Group)
 		{
-			if (w.Type() == WidgetType::Group)
-			{
-				WidgetGroup& g = std::get<WidgetGroup>(w.Info());
+			WidgetGroup& g = std::get<WidgetGroup>(w.Info());
 
-				ImGui::Checkbox(g.Label.c_str(), &g.Open);
-			}
+			ImGui::Checkbox(g.Label.c_str(), &g.Open);
 		}
 	}
-	ImGui::End();
+}
+
+void WidgetManager::DrawWidgets()
+{
+	std::scoped_lock lock{ gWidgetsMutex };
 
 	for (Widget& w : gTopLevelWidgets)
 	{
