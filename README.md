@@ -1,6 +1,6 @@
 # Widgets
 
-This script for Grand Theft Auto IV reimplements widget related natives allowing you to interact with some debugging tools left in the scripts.
+This script for Grand Theft Auto IV reimplements some debug and widget related natives allowing you to interact with some debugging tools left in the scripts.
 
 The following natives are reimplemented:
 
@@ -21,6 +21,24 @@ The following natives are reimplemented:
 - ADD_TEXT_WIDGET
 - GET_CONTENTS_OF_TEXT_WIDGET
 - SET_CONTENTS_OF_TEXT_WIDGET
+- SAVE_INT_TO_DEBUG_FILE
+- SAVE_FLOAT_TO_DEBUG_FILE
+- SAVE_NEWLINE_TO_DEBUG_FILE
+- SAVE_STRING_TO_DEBUG_FILE
+- PRINTSTRING
+- PRINTFLOAT
+- PRINTFLOAT2
+- PRINTINT
+- PRINTINT2
+- PRINTNL
+- PRINTVECTOR
+- SCRIPT_ASSERT
+- IS_KEYBOARD_KEY_PRESSED
+- IS_KEYBOARD_KEY_JUST_PRESSED
+
+PRINT\*, SAVE\_\*\_TO\_DEBUG_FILE and SCRIPT\_ASSERT natives are redirected to a logs window.
+
+IS\_KEYBOARD\_KEY\_\[JUST\_\]PRESSED natives can be enabled or disabled in-game.
 
 Note, this was just a quick project I wanted to do to see the leftover debugging tools so there may be some issues, for example, the widgets are never deleted, not even when the game is reloaded or when the script that created them is killed, which will probably cause some issues or crashes eventually. And it may not be compatible with other scripts that hook the D3D9 rendering.
 
