@@ -489,14 +489,14 @@ namespace d3d9_imgui
 		IDirect3DSurface9* backBuffer = nullptr;
 		if (FAILED(swapChain->GetBackBuffer(0, D3DBACKBUFFER_TYPE_MONO, &backBuffer)))
 		{
-			spdlog::debug("IDirect3DSwapChain9::GetBackBuffer failed");
+			SPDLOG_DEBUG("IDirect3DSwapChain9::GetBackBuffer failed");
 			return;
 		}
 
 		IDirect3DSurface9* prevRenderTarget = nullptr;
 		if (FAILED(device->GetRenderTarget(0, &prevRenderTarget)))
 		{
-			spdlog::debug("IDirect3DDevice9::GetRenderTarget failed");
+			SPDLOG_DEBUG("IDirect3DDevice9::GetRenderTarget failed");
 			return;
 		}
 
@@ -504,7 +504,7 @@ namespace d3d9_imgui
 		{
 			if (FAILED(device->SetRenderTarget(0, backBuffer)))
 			{
-				spdlog::debug("IDirect3DDevice9::SetRenderTarget failed");
+				SPDLOG_DEBUG("IDirect3DDevice9::SetRenderTarget failed");
 				return;
 			}
 		}

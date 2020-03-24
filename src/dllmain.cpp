@@ -91,19 +91,19 @@ static size_t Indent{ 0 };
 static constexpr uint32_t hashINIT_DEBUG_WIDGETS{ 0x73E911E8 };
 static void cmdINIT_DEBUG_WIDGETS(scrNativeCallContext& ctx)
 {
-	spdlog::debug("INIT_DEBUG_WIDGETS() [args:{}]", ctx.GetArgumentCount());
+	SPDLOG_DEBUG("INIT_DEBUG_WIDGETS() [args:{}]", ctx.GetArgumentCount());
 }
 
 static constexpr uint32_t hashCREATE_WIDGET_GROUP{ 0x558C4259 };
 static void cmdCREATE_WIDGET_GROUP(scrNativeCallContext& ctx)
 {
-	spdlog::debug("{:{}}CREATE_WIDGET_GROUP(\"{}\") [args:{}, thread:('{}', {})]",
-				  "",
-				  (Indent++) * 4,
-				  ctx.GetArgument<const char*>(0),
-				  ctx.GetArgumentCount(),
-				  reinterpret_cast<const char*>(GtaThread::ms_pRunningThread->programName),
-				  GtaThread::ms_pRunningThread->threadId);
+	SPDLOG_DEBUG("{:{}}CREATE_WIDGET_GROUP(\"{}\") [args:{}, thread:('{}', {})]",
+				 "",
+				 (Indent++) * 4,
+				 ctx.GetArgument<const char*>(0),
+				 ctx.GetArgumentCount(),
+				 reinterpret_cast<const char*>(GtaThread::ms_pRunningThread->programName),
+				 GtaThread::ms_pRunningThread->threadId);
 
 	ctx.SetResult(0, WidgetManager::CreateGroup(ctx.GetArgument<const char*>(0)));
 }
@@ -111,7 +111,7 @@ static void cmdCREATE_WIDGET_GROUP(scrNativeCallContext& ctx)
 static constexpr uint32_t hashEND_WIDGET_GROUP{ 0x6F760759 };
 static void cmdEND_WIDGET_GROUP(scrNativeCallContext& ctx)
 {
-	spdlog::debug("{:{}}END_WIDGET_GROUP() [args:{}]", "", (--Indent) * 4, ctx.GetArgumentCount());
+	SPDLOG_DEBUG("{:{}}END_WIDGET_GROUP() [args:{}]", "", (--Indent) * 4, ctx.GetArgumentCount());
 
 	WidgetManager::EndGroup();
 }
@@ -119,15 +119,15 @@ static void cmdEND_WIDGET_GROUP(scrNativeCallContext& ctx)
 static constexpr uint32_t hashADD_WIDGET_SLIDER{ 0x4A904476 };
 static void cmdADD_WIDGET_SLIDER(scrNativeCallContext& ctx)
 {
-	spdlog::debug("{:{}}ADD_WIDGET_SLIDER(\"{}\", ref {}, {}, {}, {}) [args:{}]",
-				  "",
-				  (Indent)*4,
-				  ctx.GetArgument<const char*>(0),
-				  ctx.GetArgument<void*>(1),
-				  ctx.GetArgument<int>(2),
-				  ctx.GetArgument<int>(3),
-				  ctx.GetArgument<int>(4),
-				  ctx.GetArgumentCount());
+	SPDLOG_DEBUG("{:{}}ADD_WIDGET_SLIDER(\"{}\", ref {}, {}, {}, {}) [args:{}]",
+				 "",
+				 (Indent)*4,
+				 ctx.GetArgument<const char*>(0),
+				 ctx.GetArgument<void*>(1),
+				 ctx.GetArgument<int>(2),
+				 ctx.GetArgument<int>(3),
+				 ctx.GetArgument<int>(4),
+				 ctx.GetArgumentCount());
 
 	ctx.SetResult(0,
 				  WidgetManager::AddSlider(ctx.GetArgument<const char*>(0),
@@ -140,15 +140,15 @@ static void cmdADD_WIDGET_SLIDER(scrNativeCallContext& ctx)
 static constexpr uint32_t hashADD_WIDGET_FLOAT_SLIDER{ 0x6F9256DF };
 static void cmdADD_WIDGET_FLOAT_SLIDER(scrNativeCallContext& ctx)
 {
-	spdlog::debug("{:{}}ADD_WIDGET_FLOAT_SLIDER(\"{}\", ref {}, {}, {}, {}) [args:{}]",
-				  "",
-				  (Indent)*4,
-				  ctx.GetArgument<const char*>(0),
-				  ctx.GetArgument<void*>(1),
-				  ctx.GetArgument<float>(2),
-				  ctx.GetArgument<float>(3),
-				  ctx.GetArgument<float>(4),
-				  ctx.GetArgumentCount());
+	SPDLOG_DEBUG("{:{}}ADD_WIDGET_FLOAT_SLIDER(\"{}\", ref {}, {}, {}, {}) [args:{}]",
+				 "",
+				 (Indent)*4,
+				 ctx.GetArgument<const char*>(0),
+				 ctx.GetArgument<void*>(1),
+				 ctx.GetArgument<float>(2),
+				 ctx.GetArgument<float>(3),
+				 ctx.GetArgument<float>(4),
+				 ctx.GetArgumentCount());
 
 	ctx.SetResult(0,
 				  WidgetManager::AddFloatSlider(ctx.GetArgument<const char*>(0),
@@ -161,12 +161,12 @@ static void cmdADD_WIDGET_FLOAT_SLIDER(scrNativeCallContext& ctx)
 static constexpr uint32_t hashADD_WIDGET_READ_ONLY{ 0x4A2E3BCA };
 static void cmdADD_WIDGET_READ_ONLY(scrNativeCallContext& ctx)
 {
-	spdlog::debug("{:{}}ADD_WIDGET_READ_ONLY(\"{}\", ref {}) [args:{}]",
-				  "",
-				  (Indent)*4,
-				  ctx.GetArgument<const char*>(0),
-				  ctx.GetArgument<void*>(1),
-				  ctx.GetArgumentCount());
+	SPDLOG_DEBUG("{:{}}ADD_WIDGET_READ_ONLY(\"{}\", ref {}) [args:{}]",
+				 "",
+				 (Indent)*4,
+				 ctx.GetArgument<const char*>(0),
+				 ctx.GetArgument<void*>(1),
+				 ctx.GetArgumentCount());
 
 	ctx.SetResult(
 		0,
@@ -176,12 +176,12 @@ static void cmdADD_WIDGET_READ_ONLY(scrNativeCallContext& ctx)
 static constexpr uint32_t hashADD_WIDGET_FLOAT_READ_ONLY{ 0x4C8A7614 };
 static void cmdADD_WIDGET_FLOAT_READ_ONLY(scrNativeCallContext& ctx)
 {
-	spdlog::debug("{:{}}ADD_WIDGET_FLOAT_READ_ONLY(\"{}\", ref {}) [args:{}]",
-				  "",
-				  (Indent)*4,
-				  ctx.GetArgument<const char*>(0),
-				  ctx.GetArgument<void*>(1),
-				  ctx.GetArgumentCount());
+	SPDLOG_DEBUG("{:{}}ADD_WIDGET_FLOAT_READ_ONLY(\"{}\", ref {}) [args:{}]",
+				 "",
+				 (Indent)*4,
+				 ctx.GetArgument<const char*>(0),
+				 ctx.GetArgument<void*>(1),
+				 ctx.GetArgumentCount());
 
 	ctx.SetResult(0,
 				  WidgetManager::AddFloatReadOnly(ctx.GetArgument<const char*>(0),
@@ -191,12 +191,12 @@ static void cmdADD_WIDGET_FLOAT_READ_ONLY(scrNativeCallContext& ctx)
 static constexpr uint32_t hashADD_WIDGET_TOGGLE{ 0x66F47727 };
 static void cmdADD_WIDGET_TOGGLE(scrNativeCallContext& ctx)
 {
-	spdlog::debug("{:{}}ADD_WIDGET_TOGGLE(\"{}\", ref {}) [args:{}]",
-				  "",
-				  (Indent)*4,
-				  ctx.GetArgument<const char*>(0),
-				  ctx.GetArgument<void*>(1),
-				  ctx.GetArgumentCount());
+	SPDLOG_DEBUG("{:{}}ADD_WIDGET_TOGGLE(\"{}\", ref {}) [args:{}]",
+				 "",
+				 (Indent)*4,
+				 ctx.GetArgument<const char*>(0),
+				 ctx.GetArgument<void*>(1),
+				 ctx.GetArgumentCount());
 
 	ctx.SetResult(
 		0,
@@ -206,11 +206,11 @@ static void cmdADD_WIDGET_TOGGLE(scrNativeCallContext& ctx)
 static constexpr uint32_t hashADD_WIDGET_STRING{ 0x27D20F21 };
 static void cmdADD_WIDGET_STRING(scrNativeCallContext& ctx)
 {
-	spdlog::debug("{:{}}ADD_WIDGET_STRING(\"{}\") [args:{}]",
-				  "",
-				  (Indent)*4,
-				  ctx.GetArgument<const char*>(0),
-				  ctx.GetArgumentCount());
+	SPDLOG_DEBUG("{:{}}ADD_WIDGET_STRING(\"{}\") [args:{}]",
+				 "",
+				 (Indent)*4,
+				 ctx.GetArgument<const char*>(0),
+				 ctx.GetArgumentCount());
 
 	ctx.SetResult(0, WidgetManager::AddString(ctx.GetArgument<const char*>(0)));
 }
@@ -218,9 +218,9 @@ static void cmdADD_WIDGET_STRING(scrNativeCallContext& ctx)
 static constexpr uint32_t hashDELETE_WIDGET_GROUP{ 0x17D72833 };
 static void cmdDELETE_WIDGET_GROUP(scrNativeCallContext& ctx)
 {
-	spdlog::debug("DELETE_WIDGET_GROUP({}) [args:{}]",
-				  ctx.GetArgument<int>(0),
-				  ctx.GetArgumentCount());
+	SPDLOG_DEBUG("DELETE_WIDGET_GROUP({}) [args:{}]",
+				 ctx.GetArgument<int>(0),
+				 ctx.GetArgumentCount());
 
 	WidgetManager::DeleteGroup(ctx.GetArgument<WidgetId>(0));
 }
@@ -228,7 +228,7 @@ static void cmdDELETE_WIDGET_GROUP(scrNativeCallContext& ctx)
 static constexpr uint32_t hashDELETE_WIDGET{ 0x267D5146 };
 static void cmdDELETE_WIDGET(scrNativeCallContext& ctx)
 {
-	spdlog::debug("DELETE_WIDGET({}) [args:{}]", ctx.GetArgument<int>(0), ctx.GetArgumentCount());
+	SPDLOG_DEBUG("DELETE_WIDGET({}) [args:{}]", ctx.GetArgument<int>(0), ctx.GetArgumentCount());
 
 	WidgetManager::Delete(ctx.GetArgument<WidgetId>(0));
 }
@@ -236,9 +236,9 @@ static void cmdDELETE_WIDGET(scrNativeCallContext& ctx)
 static constexpr uint32_t hashDOES_WIDGET_GROUP_EXIST{ 0x3AAF5BE5 };
 static void cmdDOES_WIDGET_GROUP_EXIST(scrNativeCallContext& ctx)
 {
-	spdlog::debug("DOES_WIDGET_GROUP_EXIST({}) [args:{}]",
-				  ctx.GetArgument<int>(0),
-				  ctx.GetArgumentCount());
+	SPDLOG_DEBUG("DOES_WIDGET_GROUP_EXIST({}) [args:{}]",
+				 ctx.GetArgument<int>(0),
+				 ctx.GetArgumentCount());
 
 	ctx.SetResult(0, WidgetManager::DoesGroupExist(ctx.GetArgument<WidgetId>(0)));
 }
@@ -246,10 +246,10 @@ static void cmdDOES_WIDGET_GROUP_EXIST(scrNativeCallContext& ctx)
 static constexpr uint32_t hashSTART_NEW_WIDGET_COMBO{ 0x3893A3A };
 static void cmdSTART_NEW_WIDGET_COMBO(scrNativeCallContext& ctx)
 {
-	spdlog::debug("{:{}}START_NEW_WIDGET_COMBO() [args:{}]",
-				  "",
-				  (Indent++) * 4,
-				  ctx.GetArgumentCount());
+	SPDLOG_DEBUG("{:{}}START_NEW_WIDGET_COMBO() [args:{}]",
+				 "",
+				 (Indent++) * 4,
+				 ctx.GetArgumentCount());
 
 	WidgetManager::StartNewCombo();
 }
@@ -257,11 +257,11 @@ static void cmdSTART_NEW_WIDGET_COMBO(scrNativeCallContext& ctx)
 static constexpr uint32_t hashADD_TO_WIDGET_COMBO{ 0x4F0D4AC7 };
 static void cmdADD_TO_WIDGET_COMBO(scrNativeCallContext& ctx)
 {
-	spdlog::debug("{:{}}ADD_TO_WIDGET_COMBO(\"{}\") [args:{}]",
-				  "",
-				  (Indent)*4,
-				  ctx.GetArgument<const char*>(0),
-				  ctx.GetArgumentCount());
+	SPDLOG_DEBUG("{:{}}ADD_TO_WIDGET_COMBO(\"{}\") [args:{}]",
+				 "",
+				 (Indent)*4,
+				 ctx.GetArgument<const char*>(0),
+				 ctx.GetArgumentCount());
 
 	WidgetManager::AddToCombo(ctx.GetArgument<const char*>(0));
 }
@@ -269,12 +269,12 @@ static void cmdADD_TO_WIDGET_COMBO(scrNativeCallContext& ctx)
 static constexpr uint32_t hashFINISH_WIDGET_COMBO{ 0x2CCA0D6A };
 static void cmdFINISH_WIDGET_COMBO(scrNativeCallContext& ctx)
 {
-	spdlog::debug("{:{}}FINISH_WIDGET_COMBO(\"{}\", ref {}) [args:{}]",
-				  "",
-				  (--Indent) * 4,
-				  ctx.GetArgument<const char*>(0),
-				  ctx.GetArgument<void*>(1),
-				  ctx.GetArgumentCount());
+	SPDLOG_DEBUG("{:{}}FINISH_WIDGET_COMBO(\"{}\", ref {}) [args:{}]",
+				 "",
+				 (--Indent) * 4,
+				 ctx.GetArgument<const char*>(0),
+				 ctx.GetArgument<void*>(1),
+				 ctx.GetArgumentCount());
 
 	ctx.SetResult(
 		0,
@@ -284,11 +284,11 @@ static void cmdFINISH_WIDGET_COMBO(scrNativeCallContext& ctx)
 static constexpr uint32_t hashADD_TEXT_WIDGET{ 0x7537050D };
 static void cmdADD_TEXT_WIDGET(scrNativeCallContext& ctx)
 {
-	spdlog::debug("{:{}}ADD_TEXT_WIDGET(\"{}\") [args:{}]",
-				  "",
-				  (Indent)*4,
-				  ctx.GetArgument<const char*>(0),
-				  ctx.GetArgumentCount());
+	SPDLOG_DEBUG("{:{}}ADD_TEXT_WIDGET(\"{}\") [args:{}]",
+				 "",
+				 (Indent)*4,
+				 ctx.GetArgument<const char*>(0),
+				 ctx.GetArgumentCount());
 
 	ctx.SetResult(0, WidgetManager::AddText(ctx.GetArgument<const char*>(0)));
 }
@@ -296,9 +296,9 @@ static void cmdADD_TEXT_WIDGET(scrNativeCallContext& ctx)
 static constexpr uint32_t hashGET_CONTENTS_OF_TEXT_WIDGET{ 0x742E3376 };
 static void cmdGET_CONTENTS_OF_TEXT_WIDGET(scrNativeCallContext& ctx)
 {
-	spdlog::debug("GET_CONTENTS_OF_TEXT_WIDGET({}) [args:{}]",
-				  ctx.GetArgument<int>(0),
-				  ctx.GetArgumentCount());
+	SPDLOG_DEBUG("GET_CONTENTS_OF_TEXT_WIDGET({}) [args:{}]",
+				 ctx.GetArgument<int>(0),
+				 ctx.GetArgumentCount());
 
 	ctx.SetResult(0, WidgetManager::GetTextContents(ctx.GetArgument<WidgetId>(0)));
 }
@@ -306,10 +306,10 @@ static void cmdGET_CONTENTS_OF_TEXT_WIDGET(scrNativeCallContext& ctx)
 static constexpr uint32_t hashSET_CONTENTS_OF_TEXT_WIDGET{ 0x6B9C6127 };
 static void cmdSET_CONTENTS_OF_TEXT_WIDGET(scrNativeCallContext& ctx)
 {
-	spdlog::debug("SET_CONTENTS_OF_TEXT_WIDGET({}, \"{}\") [args:{}]",
-				  ctx.GetArgument<int>(0),
-				  ctx.GetArgument<const char*>(1),
-				  ctx.GetArgumentCount());
+	SPDLOG_DEBUG("SET_CONTENTS_OF_TEXT_WIDGET({}, \"{}\") [args:{}]",
+				 ctx.GetArgument<int>(0),
+				 ctx.GetArgument<const char*>(1),
+				 ctx.GetArgumentCount());
 
 	WidgetManager::SetTextContents(ctx.GetArgument<WidgetId>(0), ctx.GetArgument<const char*>(1));
 }
@@ -317,9 +317,9 @@ static void cmdSET_CONTENTS_OF_TEXT_WIDGET(scrNativeCallContext& ctx)
 static constexpr uint32_t hashSAVE_INT_TO_DEBUG_FILE{ 0x65EF0CB8 };
 static void cmdSAVE_INT_TO_DEBUG_FILE(scrNativeCallContext& ctx)
 {
-	spdlog::debug("SAVE_INT_TO_DEBUG_FILE({}) [args:{}]",
-				  ctx.GetArgument<int>(0),
-				  ctx.GetArgumentCount());
+	SPDLOG_DEBUG("SAVE_INT_TO_DEBUG_FILE({}) [args:{}]",
+				 ctx.GetArgument<int>(0),
+				 ctx.GetArgumentCount());
 
 	LogWindow::AddDebugFileLog("%d", ctx.GetArgument<int>(0));
 }
@@ -327,9 +327,9 @@ static void cmdSAVE_INT_TO_DEBUG_FILE(scrNativeCallContext& ctx)
 static constexpr uint32_t hashSAVE_FLOAT_TO_DEBUG_FILE{ 0x66317064 };
 static void cmdSAVE_FLOAT_TO_DEBUG_FILE(scrNativeCallContext& ctx)
 {
-	spdlog::debug("SAVE_FLOAT_TO_DEBUG_FILE({}) [args:{}]",
-				  ctx.GetArgument<float>(0),
-				  ctx.GetArgumentCount());
+	SPDLOG_DEBUG("SAVE_FLOAT_TO_DEBUG_FILE({}) [args:{}]",
+				 ctx.GetArgument<float>(0),
+				 ctx.GetArgumentCount());
 
 	LogWindow::AddDebugFileLog("%f", ctx.GetArgument<float>(0));
 }
@@ -337,7 +337,7 @@ static void cmdSAVE_FLOAT_TO_DEBUG_FILE(scrNativeCallContext& ctx)
 static constexpr uint32_t hashSAVE_NEWLINE_TO_DEBUG_FILE{ 0x69D90F11 };
 static void cmdSAVE_NEWLINE_TO_DEBUG_FILE(scrNativeCallContext& ctx)
 {
-	spdlog::debug("SAVE_NEWLINE_TO_DEBUG_FILE() [args:{}]", ctx.GetArgumentCount());
+	SPDLOG_DEBUG("SAVE_NEWLINE_TO_DEBUG_FILE() [args:{}]", ctx.GetArgumentCount());
 
 	LogWindow::AddDebugFileLog("\n");
 }
@@ -345,9 +345,9 @@ static void cmdSAVE_NEWLINE_TO_DEBUG_FILE(scrNativeCallContext& ctx)
 static constexpr uint32_t hashSAVE_STRING_TO_DEBUG_FILE{ 0x27FA32D4 };
 static void cmdSAVE_STRING_TO_DEBUG_FILE(scrNativeCallContext& ctx)
 {
-	spdlog::debug("SAVE_STRING_TO_DEBUG_FILE(\"{}\") [args:{}]",
-				  ctx.GetArgument<const char*>(0),
-				  ctx.GetArgumentCount());
+	SPDLOG_DEBUG("SAVE_STRING_TO_DEBUG_FILE(\"{}\") [args:{}]",
+				 ctx.GetArgument<const char*>(0),
+				 ctx.GetArgumentCount());
 
 	LogWindow::AddDebugFileLog("%s", ctx.GetArgument<const char*>(0));
 }
@@ -355,9 +355,9 @@ static void cmdSAVE_STRING_TO_DEBUG_FILE(scrNativeCallContext& ctx)
 static constexpr uint32_t hashPRINTSTRING{ 0x616F492C };
 static void cmdPRINTSTRING(scrNativeCallContext& ctx)
 {
-	spdlog::debug("PRINTSTRING(\"{}\") [args:{}]",
-				  ctx.GetArgument<const char*>(0),
-				  ctx.GetArgumentCount());
+	SPDLOG_DEBUG("PRINTSTRING(\"{}\") [args:{}]",
+				 ctx.GetArgument<const char*>(0),
+				 ctx.GetArgumentCount());
 
 	LogWindow::AddPrintLog("%s", ctx.GetArgument<const char*>(0));
 }
@@ -365,7 +365,7 @@ static void cmdPRINTSTRING(scrNativeCallContext& ctx)
 static constexpr uint32_t hashPRINTFLOAT{ 0x2F206763 };
 static void cmdPRINTFLOAT(scrNativeCallContext& ctx)
 {
-	spdlog::debug("PRINTFLOAT({}) [args:{}]", ctx.GetArgument<float>(0), ctx.GetArgumentCount());
+	SPDLOG_DEBUG("PRINTFLOAT({}) [args:{}]", ctx.GetArgument<float>(0), ctx.GetArgumentCount());
 
 	LogWindow::AddPrintLog("%f", ctx.GetArgument<float>(0));
 }
@@ -373,10 +373,10 @@ static void cmdPRINTFLOAT(scrNativeCallContext& ctx)
 static constexpr uint32_t hashPRINTFLOAT2{ 0x108A527F };
 static void cmdPRINTFLOAT2(scrNativeCallContext& ctx)
 {
-	spdlog::debug("PRINTFLOAT2({}, {}) [args:{}]",
-				  ctx.GetArgument<float>(0),
-				  ctx.GetArgument<float>(1),
-				  ctx.GetArgumentCount());
+	SPDLOG_DEBUG("PRINTFLOAT2({}, {}) [args:{}]",
+				 ctx.GetArgument<float>(0),
+				 ctx.GetArgument<float>(1),
+				 ctx.GetArgumentCount());
 
 	LogWindow::AddPrintLog("%f, %f", ctx.GetArgument<float>(0), ctx.GetArgument<float>(1));
 }
@@ -384,7 +384,7 @@ static void cmdPRINTFLOAT2(scrNativeCallContext& ctx)
 static constexpr uint32_t hashPRINTINT{ 0x20421014 };
 static void cmdPRINTINT(scrNativeCallContext& ctx)
 {
-	spdlog::debug("PRINTINT({}) [args:{}]", ctx.GetArgument<int>(0), ctx.GetArgumentCount());
+	SPDLOG_DEBUG("PRINTINT({}) [args:{}]", ctx.GetArgument<int>(0), ctx.GetArgumentCount());
 
 	LogWindow::AddPrintLog("%d", ctx.GetArgument<int>(0));
 }
@@ -392,10 +392,10 @@ static void cmdPRINTINT(scrNativeCallContext& ctx)
 static constexpr uint32_t hashPRINTINT2{ 0x49B35C2D };
 static void cmdPRINTINT2(scrNativeCallContext& ctx)
 {
-	spdlog::debug("PRINTINT2({}, {}) [args:{}]",
-				  ctx.GetArgument<int>(0),
-				  ctx.GetArgument<int>(1),
-				  ctx.GetArgumentCount());
+	SPDLOG_DEBUG("PRINTINT2({}, {}) [args:{}]",
+				 ctx.GetArgument<int>(0),
+				 ctx.GetArgument<int>(1),
+				 ctx.GetArgumentCount());
 
 	LogWindow::AddPrintLog("%d, %d", ctx.GetArgument<int>(0), ctx.GetArgument<int>(1));
 }
@@ -403,7 +403,7 @@ static void cmdPRINTINT2(scrNativeCallContext& ctx)
 static constexpr uint32_t hashPRINTNL{ 0x4013147B };
 static void cmdPRINTNL(scrNativeCallContext& ctx)
 {
-	spdlog::debug("PRINTNL() [args:{}]", ctx.GetArgumentCount());
+	SPDLOG_DEBUG("PRINTNL() [args:{}]", ctx.GetArgumentCount());
 
 	LogWindow::AddPrintLog("\n");
 }
@@ -411,11 +411,11 @@ static void cmdPRINTNL(scrNativeCallContext& ctx)
 static constexpr uint32_t hashPRINTVECTOR{ 0x61965EB3 };
 static void cmdPRINTVECTOR(scrNativeCallContext& ctx)
 {
-	spdlog::debug("PRINTVECTOR({{ {}, {}, {} }}) [args:{}]",
-				  ctx.GetArgument<float>(0),
-				  ctx.GetArgument<float>(1),
-				  ctx.GetArgument<float>(2),
-				  ctx.GetArgumentCount());
+	SPDLOG_DEBUG("PRINTVECTOR({{ {}, {}, {} }}) [args:{}]",
+				 ctx.GetArgument<float>(0),
+				 ctx.GetArgument<float>(1),
+				 ctx.GetArgument<float>(2),
+				 ctx.GetArgumentCount());
 
 	LogWindow::AddPrintLog("{ %f, %f, %f }",
 						   ctx.GetArgument<float>(0),
@@ -426,9 +426,9 @@ static void cmdPRINTVECTOR(scrNativeCallContext& ctx)
 static constexpr uint32_t hashSCRIPT_ASSERT{ 0x10C75BDA };
 static void cmdSCRIPT_ASSERT(scrNativeCallContext& ctx)
 {
-	spdlog::debug("SCRIPT_ASSERT(\"{}\") [args:{}]",
-				  ctx.GetArgument<const char*>(0),
-				  ctx.GetArgumentCount());
+	SPDLOG_DEBUG("SCRIPT_ASSERT(\"{}\") [args:{}]",
+				 ctx.GetArgument<const char*>(0),
+				 ctx.GetArgumentCount());
 
 	LogWindow::AddPrintLog("[ASSERT] %s", ctx.GetArgument<const char*>(0));
 }
@@ -454,18 +454,23 @@ static void ToggleDebugKeyboard(bool enable)
 
 static DWORD WINAPI Main(PVOID)
 {
+	// clang-format off
+	SPDLOG_INFO("Initializing...");
 	MH_Initialize();
-	d3d9_hook::init();
-	d3d9_imgui::init();
-	WidgetManager::Init();
+	d3d9_hook::init(); SPDLOG_INFO(" > D3D9 Hook initialized");
+	d3d9_imgui::init(); SPDLOG_INFO(" > D3D9 ImGui initialized");
+	WidgetManager::Init(); SPDLOG_INFO(" > Widget Manager initialized");
 	MH_EnableHook(MH_ALL_HOOKS);
+	// clang-format on
 
+	SPDLOG_INFO(" > Waiting for natives to be registered");
 	while (!gNativesTableSize)
 	{
 		Sleep(5);
 	}
 	Sleep(5);
 
+	SPDLOG_INFO(" > Replacing natives...");
 	using N = std::pair<uint32_t, scrNativeCommand>;
 	const auto replaceNative = [](const N& n) {
 		if (NativeEntry* e = FindNative(n.first))
@@ -508,6 +513,8 @@ static DWORD WINAPI Main(PVOID)
 	};
 	std::for_each(nativesToReplace.begin(), nativesToReplace.end(), replaceNative);
 
+	SPDLOG_INFO(" > Natives replaced");
+
 	d3d9_imgui::set_callback([]() {
 		if (ImGui::Begin("Widget manager"))
 		{
@@ -535,6 +542,8 @@ static DWORD WINAPI Main(PVOID)
 		WidgetManager::DrawWidgets();
 	});
 
+	SPDLOG_INFO(" > Done");
+
 	return 0;
 }
 
@@ -546,7 +555,7 @@ BOOL APIENTRY DllMain([[maybe_unused]] HMODULE hModule,
 	{
 		spdlog::set_default_logger(spdlog::basic_logger_mt("file_logger", "Widgets.log"));
 		spdlog::flush_every(std::chrono::seconds(30));
-		spdlog::set_level(spdlog::level::info);
+		spdlog::set_level(static_cast<spdlog::level::level_enum>(SPDLOG_ACTIVE_LEVEL));
 		if (HANDLE h = CreateThread(nullptr, 0, &Main, nullptr, 0, nullptr))
 		{
 			CloseHandle(h);

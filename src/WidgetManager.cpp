@@ -130,9 +130,9 @@ struct HookDummy
 	void __thiscall GtaThread_Kill_detour()
 	{
 		GtaThread* This = reinterpret_cast<GtaThread*>(this);
-		spdlog::debug("thread:('{}', {}) killed",
-					  reinterpret_cast<const char*>(This->programName),
-					  This->threadId);
+		SPDLOG_DEBUG("Thread('{}', {}) killed",
+					 reinterpret_cast<const char*>(This->programName),
+					 This->threadId);
 
 		{
 			std::scoped_lock lock{ gWidgetsMutex };
