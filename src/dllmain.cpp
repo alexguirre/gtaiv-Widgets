@@ -563,6 +563,7 @@ BOOL APIENTRY DllMain([[maybe_unused]] HMODULE hModule,
 	}
 	else if (ul_reason_for_call == DLL_PROCESS_DETACH)
 	{
+		d3d9_imgui::shutdown();
 		spdlog::shutdown();
 	}
 

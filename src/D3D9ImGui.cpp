@@ -531,15 +531,11 @@ namespace d3d9_imgui
 		d3d9_hook::set_post_reset_callback(&post_reset_callback);
 	}
 
-	void set_callback(void (*cb)()) { gDrawCallback = cb; }
+	void shutdown()
+	{
+		dx9_invalidate_device_objects();
+		ImGui::DestroyContext();
+	}
 
-	// TODO: perform shutdown somewhere
-	// static void win32_shutdown() {}
-	// static void dx9_shutdown() { dx9_invalidate_device_objects(); }
-	// static void shutdown()
-	//{
-	//	dx9_shutdown();
-	//	win32_shutdown();
-	//	ImGui::DestroyContext();
-	//}
+	void set_callback(void (*cb)()) { gDrawCallback = cb; }
 }
