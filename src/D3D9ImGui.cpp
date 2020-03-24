@@ -8,6 +8,7 @@
 namespace d3d9_imgui
 {
 	static void (*gDrawCallback)();
+	static int* gMouseWheel;
 
 	static HWND g_hWnd = NULL;
 	static INT64 g_Time = 0;
@@ -35,12 +36,6 @@ namespace d3d9_imgui
 		ImGuiIO& io = ImGui::GetIO();
 		switch (msg)
 		{
-		case WM_MOUSEWHEEL:
-			io.MouseWheel += (float)GET_WHEEL_DELTA_WPARAM(wParam) / (float)WHEEL_DELTA;
-			return 0;
-		case WM_MOUSEHWHEEL:
-			io.MouseWheelH += (float)GET_WHEEL_DELTA_WPARAM(wParam) / (float)WHEEL_DELTA;
-			return 0;
 		case WM_KEYDOWN:
 		case WM_SYSKEYDOWN:
 			if (wParam < 256)
@@ -228,14 +223,14 @@ namespace d3d9_imgui
 		io.KeyShift = (::GetKeyState(VK_SHIFT) & 0x8000) != 0;
 		io.KeyAlt = (::GetKeyState(VK_MENU) & 0x8000) != 0;
 		io.KeySuper = false;
-		// io.KeysDown[], io.MousePos, io.MouseDown[], io.MouseWheel: filled by the WndProc handler
-		// below.
 
 		io.MouseDown[0] = (::GetAsyncKeyState(VK_LBUTTON) & 0x8000) != 0;
 		io.MouseDown[1] = (::GetAsyncKeyState(VK_RBUTTON) & 0x8000) != 0;
 		io.MouseDown[2] = (::GetAsyncKeyState(VK_MBUTTON) & 0x8000) != 0;
 		io.MouseDown[3] = (::GetAsyncKeyState(VK_XBUTTON1) & 0x8000) != 0;
 		io.MouseDown[4] = (::GetAsyncKeyState(VK_XBUTTON2) & 0x8000) != 0;
+
+		io.MouseWheel = *gMouseWheel;
 
 		// Update OS mouse position
 		win32_update_mouse_pos();
@@ -525,8 +520,11 @@ namespace d3d9_imgui
 
 	void init()
 	{
-		void* addr = hook::get_pattern("55 8B EC 83 E4 F8 83 EC 14 53 8B 5D 08");
-		MH_CreateHook(addr, &WndProc_detour, reinterpret_cast<void**>(&WndProc_orig));
+		MH_CreateHook(hook::get_pattern("55 8B EC 83 E4 F8 83 EC 14 53 8B 5D 08"),
+					  &WndProc_detour,
+					  reinterpret_cast<void**>(&WndProc_orig));
+
+		gMouseWheel = *hook::get_pattern<int*>("A1 ? ? ? ? 85 C0 74 0E 7E 07", 1);
 
 		d3d9_hook::set_present_callback(&present_callback);
 		d3d9_hook::set_pre_reset_callback(&pre_reset_callback);
