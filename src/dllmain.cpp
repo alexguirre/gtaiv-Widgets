@@ -1,6 +1,7 @@
 #include "D3D9Hook.h"
 #include "D3D9ImGui.h"
 #include "GtaThread.h"
+#include "LogWindow.h"
 #include "WidgetManager.h"
 #include <Hooking.Patterns.h>
 #include <MinHook.h>
@@ -313,6 +314,125 @@ static void cmdSET_CONTENTS_OF_TEXT_WIDGET(scrNativeCallContext& ctx)
 	WidgetManager::SetTextContents(ctx.GetArgument<WidgetId>(0), ctx.GetArgument<const char*>(1));
 }
 
+static constexpr uint32_t hashSAVE_INT_TO_DEBUG_FILE{ 0x65EF0CB8 };
+static void cmdSAVE_INT_TO_DEBUG_FILE(scrNativeCallContext& ctx)
+{
+	spdlog::debug("SAVE_INT_TO_DEBUG_FILE({}) [args:{}]",
+				  ctx.GetArgument<int>(0),
+				  ctx.GetArgumentCount());
+
+	LogWindow::AddDebugFileLog("%d", ctx.GetArgument<int>(0));
+}
+
+static constexpr uint32_t hashSAVE_FLOAT_TO_DEBUG_FILE{ 0x66317064 };
+static void cmdSAVE_FLOAT_TO_DEBUG_FILE(scrNativeCallContext& ctx)
+{
+	spdlog::debug("SAVE_FLOAT_TO_DEBUG_FILE({}) [args:{}]",
+				  ctx.GetArgument<float>(0),
+				  ctx.GetArgumentCount());
+
+	LogWindow::AddDebugFileLog("%f", ctx.GetArgument<float>(0));
+}
+
+static constexpr uint32_t hashSAVE_NEWLINE_TO_DEBUG_FILE{ 0x69D90F11 };
+static void cmdSAVE_NEWLINE_TO_DEBUG_FILE(scrNativeCallContext& ctx)
+{
+	spdlog::debug("SAVE_NEWLINE_TO_DEBUG_FILE() [args:{}]", ctx.GetArgumentCount());
+
+	LogWindow::AddDebugFileLog("\n");
+}
+
+static constexpr uint32_t hashSAVE_STRING_TO_DEBUG_FILE{ 0x27FA32D4 };
+static void cmdSAVE_STRING_TO_DEBUG_FILE(scrNativeCallContext& ctx)
+{
+	spdlog::debug("SAVE_STRING_TO_DEBUG_FILE(\"{}\") [args:{}]",
+				  ctx.GetArgument<const char*>(0),
+				  ctx.GetArgumentCount());
+
+	LogWindow::AddDebugFileLog("%s", ctx.GetArgument<const char*>(0));
+}
+
+static constexpr uint32_t hashPRINTSTRING{ 0x616F492C };
+static void cmdPRINTSTRING(scrNativeCallContext& ctx)
+{
+	spdlog::debug("PRINTSTRING(\"{}\") [args:{}]",
+				  ctx.GetArgument<const char*>(0),
+				  ctx.GetArgumentCount());
+
+	LogWindow::AddPrintLog("%s", ctx.GetArgument<const char*>(0));
+}
+
+static constexpr uint32_t hashPRINTFLOAT{ 0x2F206763 };
+static void cmdPRINTFLOAT(scrNativeCallContext& ctx)
+{
+	spdlog::debug("PRINTFLOAT({}) [args:{}]", ctx.GetArgument<float>(0), ctx.GetArgumentCount());
+
+	LogWindow::AddPrintLog("%f", ctx.GetArgument<float>(0));
+}
+
+static constexpr uint32_t hashPRINTFLOAT2{ 0x108A527F };
+static void cmdPRINTFLOAT2(scrNativeCallContext& ctx)
+{
+	spdlog::debug("PRINTFLOAT2({}, {}) [args:{}]",
+				  ctx.GetArgument<float>(0),
+				  ctx.GetArgument<float>(1),
+				  ctx.GetArgumentCount());
+
+	LogWindow::AddPrintLog("%f, %f", ctx.GetArgument<float>(0), ctx.GetArgument<float>(1));
+}
+
+static constexpr uint32_t hashPRINTINT{ 0x20421014 };
+static void cmdPRINTINT(scrNativeCallContext& ctx)
+{
+	spdlog::debug("PRINTINT({}) [args:{}]", ctx.GetArgument<int>(0), ctx.GetArgumentCount());
+
+	LogWindow::AddPrintLog("%d", ctx.GetArgument<int>(0));
+}
+
+static constexpr uint32_t hashPRINTINT2{ 0x49B35C2D };
+static void cmdPRINTINT2(scrNativeCallContext& ctx)
+{
+	spdlog::debug("PRINTINT2({}, {}) [args:{}]",
+				  ctx.GetArgument<int>(0),
+				  ctx.GetArgument<int>(1),
+				  ctx.GetArgumentCount());
+
+	LogWindow::AddPrintLog("%d, %d", ctx.GetArgument<int>(0), ctx.GetArgument<int>(1));
+}
+
+static constexpr uint32_t hashPRINTNL{ 0x4013147B };
+static void cmdPRINTNL(scrNativeCallContext& ctx)
+{
+	spdlog::debug("PRINTNL() [args:{}]", ctx.GetArgumentCount());
+
+	LogWindow::AddPrintLog("\n");
+}
+
+static constexpr uint32_t hashPRINTVECTOR{ 0x61965EB3 };
+static void cmdPRINTVECTOR(scrNativeCallContext& ctx)
+{
+	spdlog::debug("PRINTVECTOR({{ {}, {}, {} }}) [args:{}]",
+				  ctx.GetArgument<float>(0),
+				  ctx.GetArgument<float>(1),
+				  ctx.GetArgument<float>(2),
+				  ctx.GetArgumentCount());
+
+	LogWindow::AddPrintLog("{ %f, %f, %f }",
+						   ctx.GetArgument<float>(0),
+						   ctx.GetArgument<float>(1),
+						   ctx.GetArgument<float>(2));
+}
+
+static constexpr uint32_t hashSCRIPT_ASSERT{ 0x10C75BDA };
+static void cmdSCRIPT_ASSERT(scrNativeCallContext& ctx)
+{
+	spdlog::debug("SCRIPT_ASSERT(\"{}\") [args:{}]",
+				  ctx.GetArgument<const char*>(0),
+				  ctx.GetArgumentCount());
+
+	LogWindow::AddPrintLog("[ASSERT] %s", ctx.GetArgument<const char*>(0));
+}
+
 static void ToggleDebugKeyboard(bool enable)
 {
 	static std::array<uint8_t*, 2> addresses = []() {
@@ -372,19 +492,35 @@ static DWORD WINAPI Main(PVOID)
 		N{ hashFINISH_WIDGET_COMBO, &cmdFINISH_WIDGET_COMBO },
 		N{ hashADD_TEXT_WIDGET, &cmdADD_TEXT_WIDGET },
 		N{ hashGET_CONTENTS_OF_TEXT_WIDGET, &cmdGET_CONTENTS_OF_TEXT_WIDGET },
-		N{ hashSET_CONTENTS_OF_TEXT_WIDGET, &cmdSET_CONTENTS_OF_TEXT_WIDGET }
+		N{ hashSET_CONTENTS_OF_TEXT_WIDGET, &cmdSET_CONTENTS_OF_TEXT_WIDGET },
+		N{ hashSAVE_INT_TO_DEBUG_FILE, &cmdSAVE_INT_TO_DEBUG_FILE },
+		N{ hashSAVE_FLOAT_TO_DEBUG_FILE, &cmdSAVE_FLOAT_TO_DEBUG_FILE },
+		N{ hashSAVE_NEWLINE_TO_DEBUG_FILE, &cmdSAVE_NEWLINE_TO_DEBUG_FILE },
+		N{ hashSAVE_STRING_TO_DEBUG_FILE, &cmdSAVE_STRING_TO_DEBUG_FILE },
+		N{ hashPRINTSTRING, &cmdPRINTSTRING },
+		N{ hashPRINTFLOAT, &cmdPRINTFLOAT },
+		N{ hashPRINTFLOAT2, &cmdPRINTFLOAT2 },
+		N{ hashPRINTINT, &cmdPRINTINT },
+		N{ hashPRINTINT2, &cmdPRINTINT2 },
+		N{ hashPRINTNL, &cmdPRINTNL },
+		N{ hashPRINTVECTOR, &cmdPRINTVECTOR },
+		N{ hashSCRIPT_ASSERT, &cmdSCRIPT_ASSERT },
 	};
 	std::for_each(nativesToReplace.begin(), nativesToReplace.end(), replaceNative);
 
 	d3d9_imgui::set_callback([]() {
 		if (ImGui::Begin("Widget manager"))
 		{
+			ImGui::Checkbox("Logs", &LogWindow::Open);
+
 			static bool debugKeyboard = false;
 			if (ImGui::Checkbox("Debug keyboard", &debugKeyboard))
 			{
 				ToggleDebugKeyboard(debugKeyboard);
 			}
+
 			ImGui::Separator();
+
 			ImGui::TextUnformatted("Widgets");
 			if (ImGui::BeginChild("WidgetsFrame", ImVec2{ 0.0f, 0.0f }, true))
 			{
@@ -393,6 +529,8 @@ static DWORD WINAPI Main(PVOID)
 			ImGui::EndChild();
 		}
 		ImGui::End();
+
+		LogWindow::Draw();
 
 		WidgetManager::DrawWidgets();
 	});
@@ -408,7 +546,7 @@ BOOL APIENTRY DllMain([[maybe_unused]] HMODULE hModule,
 	{
 		spdlog::set_default_logger(spdlog::basic_logger_mt("file_logger", "Widgets.log"));
 		spdlog::flush_every(std::chrono::seconds(30));
-		spdlog::set_level(spdlog::level::debug);
+		spdlog::set_level(spdlog::level::info);
 		if (HANDLE h = CreateThread(nullptr, 0, &Main, nullptr, 0, nullptr))
 		{
 			CloseHandle(h);
