@@ -152,10 +152,12 @@ void Widget::Draw()
 					   {
 						   if (ImGui::CollapsingHeader(w.Label.c_str()))
 						   {
+							   ImGui::Indent();
 							   for (Widget& c : w.Children)
 							   {
 								   c.Draw();
 							   }
+							   ImGui::Unindent();
 						   }
 					   }
 					   else if (w.Open)
