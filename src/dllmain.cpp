@@ -1,5 +1,6 @@
 #include "D3D9Hook.h"
 #include "D3D9ImGui.h"
+#include "GtaThread.h"
 #include "WidgetManager.h"
 #include <Hooking.Patterns.h>
 #include <MinHook.h>
@@ -95,11 +96,13 @@ static void cmdINIT_DEBUG_WIDGETS(scrNativeCallContext& ctx)
 static constexpr uint32_t hashCREATE_WIDGET_GROUP{ 0x558C4259 };
 static void cmdCREATE_WIDGET_GROUP(scrNativeCallContext& ctx)
 {
-	spdlog::debug("{:{}}CREATE_WIDGET_GROUP(\"{}\") [args:{}]",
+	spdlog::debug("{:{}}CREATE_WIDGET_GROUP(\"{}\") [args:{}, thread:('{}', {})]",
 				  "",
 				  (Indent++) * 4,
 				  ctx.GetArgument<const char*>(0),
-				  ctx.GetArgumentCount());
+				  ctx.GetArgumentCount(),
+				  reinterpret_cast<const char*>(GtaThread::ms_pRunningThread->programName),
+				  GtaThread::ms_pRunningThread->threadId);
 
 	ctx.SetResult(0, WidgetManager::CreateGroup(ctx.GetArgument<const char*>(0)));
 }
@@ -218,7 +221,7 @@ static void cmdDELETE_WIDGET_GROUP(scrNativeCallContext& ctx)
 				  ctx.GetArgument<int>(0),
 				  ctx.GetArgumentCount());
 
-	ctx.SetResult(0, WidgetManager::DeleteGroup(ctx.GetArgument<WidgetId>(0)));
+	WidgetManager::DeleteGroup(ctx.GetArgument<WidgetId>(0));
 }
 
 static constexpr uint32_t hashDELETE_WIDGET{ 0x267D5146 };
@@ -226,7 +229,7 @@ static void cmdDELETE_WIDGET(scrNativeCallContext& ctx)
 {
 	spdlog::debug("DELETE_WIDGET({}) [args:{}]", ctx.GetArgument<int>(0), ctx.GetArgumentCount());
 
-	ctx.SetResult(0, WidgetManager::Delete(ctx.GetArgument<WidgetId>(0)));
+	WidgetManager::Delete(ctx.GetArgument<WidgetId>(0));
 }
 
 static constexpr uint32_t hashDOES_WIDGET_GROUP_EXIST{ 0x3AAF5BE5 };
@@ -329,6 +332,7 @@ static DWORD WINAPI Main(PVOID)
 	MH_Initialize();
 	d3d9_hook::init();
 	d3d9_imgui::init();
+	WidgetManager::Init();
 	MH_EnableHook(MH_ALL_HOOKS);
 
 	fixIS_KEYBOARD_KEY_PRESSED();

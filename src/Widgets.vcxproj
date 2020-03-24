@@ -56,7 +56,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;WIDGETS_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NOMINMAX;WIN32;_DEBUG;WIDGETS_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <TreatWarningAsError>false</TreatWarningAsError>
       <LanguageStandard>stdcpp17</LanguageStandard>
@@ -76,7 +76,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;NDEBUG;WIDGETS_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NOMINMAX;WIN32;NDEBUG;WIDGETS_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <TreatWarningAsError>false</TreatWarningAsError>
       <LanguageStandard>stdcpp17</LanguageStandard>
@@ -105,6 +105,7 @@
     <ClCompile Include="D3D9Hook.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="D3D9ImGui.cpp" />
+    <ClCompile Include="GtaThread.cpp" />
     <ClCompile Include="Widget.cpp" />
     <ClCompile Include="WidgetManager.cpp" />
   </ItemGroup>
@@ -126,6 +127,7 @@
     <ClInclude Include="..\dependencies\patterns\Hooking.Patterns.h" />
     <ClInclude Include="D3D9Hook.h" />
     <ClInclude Include="D3D9ImGui.h" />
+    <ClInclude Include="GtaThread.h" />
     <ClInclude Include="Widget.h" />
     <ClInclude Include="WidgetManager.h" />
   </ItemGroup>
