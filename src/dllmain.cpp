@@ -310,12 +310,28 @@ static void cmdSET_CONTENTS_OF_TEXT_WIDGET(scrNativeCallContext& ctx)
 	WidgetManager::SetTextContents(ctx.GetArgument<WidgetId>(0), ctx.GetArgument<const char*>(1));
 }
 
+// TODO: some way to toggle debug keyboard
+static void fixIS_KEYBOARD_KEY_PRESSED()
+{
+	hook::pattern("6A 00 FF 74 24 10 B9 ? ? ? ? 32 DB E8 ? ? ? ? 0F B6 CB")
+		.for_each_result([](const hook::pattern_match& p) {
+			uint8_t* v = p.get<uint8_t>(1);
+
+			DWORD oldProtect;
+			VirtualProtect(v, sizeof(uint8_t), PAGE_EXECUTE_READWRITE, &oldProtect);
+			*v = 1;
+			VirtualProtect(v, sizeof(uint8_t), oldProtect, &oldProtect);
+		});
+}
+
 static DWORD WINAPI Main(PVOID)
 {
 	MH_Initialize();
 	d3d9_hook::init();
 	d3d9_imgui::init();
 	MH_EnableHook(MH_ALL_HOOKS);
+
+	fixIS_KEYBOARD_KEY_PRESSED();
 
 	while (!gNativesTableSize)
 	{
