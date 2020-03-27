@@ -97,15 +97,20 @@ static void cmdINIT_DEBUG_WIDGETS(scrNativeCallContext& ctx)
 static constexpr uint32_t hashCREATE_WIDGET_GROUP{ 0x558C4259 };
 static void cmdCREATE_WIDGET_GROUP(scrNativeCallContext& ctx)
 {
+	const char* name = ctx.GetArgument<const char*>(0);
+	if (!name)
+	{
+		name = "<NULL>";
+	}
 	SPDLOG_DEBUG("{:{}}CREATE_WIDGET_GROUP(\"{}\") [args:{}, thread:('{}', {})]",
 				 "",
 				 (Indent++) * 4,
-				 ctx.GetArgument<const char*>(0),
+				 name,
 				 ctx.GetArgumentCount(),
 				 reinterpret_cast<const char*>(GtaThread::ms_pRunningThread->programName),
 				 GtaThread::ms_pRunningThread->threadId);
 
-	ctx.SetResult(0, WidgetManager::CreateGroup(ctx.GetArgument<const char*>(0)));
+	ctx.SetResult(0, WidgetManager::CreateGroup(name));
 }
 
 static constexpr uint32_t hashEND_WIDGET_GROUP{ 0x6F760759 };
