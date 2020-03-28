@@ -106,6 +106,7 @@
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="D3D9ImGui.cpp" />
     <ClCompile Include="GtaThread.cpp" />
+    <ClCompile Include="ioInput.cpp" />
     <ClCompile Include="LogWindow.cpp" />
     <ClCompile Include="Widget.cpp" />
     <ClCompile Include="WidgetManager.cpp" />
@@ -129,6 +130,7 @@
     <ClInclude Include="D3D9Hook.h" />
     <ClInclude Include="D3D9ImGui.h" />
     <ClInclude Include="GtaThread.h" />
+    <ClInclude Include="ioInput.h" />
     <ClInclude Include="LogWindow.h" />
     <ClInclude Include="Widget.h" />
     <ClInclude Include="WidgetManager.h" />

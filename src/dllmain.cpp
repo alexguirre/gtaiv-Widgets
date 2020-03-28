@@ -3,6 +3,7 @@
 #include "GtaThread.h"
 #include "LogWindow.h"
 #include "WidgetManager.h"
+#include "ioInput.h"
 #include <Hooking.Patterns.h>
 #include <MinHook.h>
 #include <Windows.h>
@@ -520,7 +521,30 @@ static DWORD WINAPI Main(PVOID)
 
 	SPDLOG_INFO(" > Natives replaced");
 
+	static bool blockInput = false;
+	rage::ioInput::sm_Updaters[0] = []() {
+		if (ImGui::GetCurrentContext())
+		{
+			ImGui::GetIO().MouseWheel = rage::ioMouse::m_dZ;
+		}
+
+		if (blockInput)
+		{
+			memset(rage::ioKeyboard::sm_Keys, 0, sizeof(rage::ioKeyboard::sm_Keys));
+			rage::ioMouse::m_LastButtons = 0;
+			rage::ioMouse::m_Buttons = 0;
+			rage::ioMouse::m_dX = 0;
+			rage::ioMouse::m_dY = 0;
+			rage::ioMouse::m_dZ = 0;
+		}
+	};
+
 	d3d9_imgui::set_callback([]() {
+		if (ImGui::IsKeyDown(VK_SHIFT) && ImGui::IsKeyPressed(VK_F5))
+		{
+			blockInput = !blockInput;
+		}
+
 		if (ImGui::Begin("Widget manager"))
 		{
 			ImGui::Checkbox("Logs", &LogWindow::Open);
@@ -530,6 +554,8 @@ static DWORD WINAPI Main(PVOID)
 			{
 				ToggleDebugKeyboard(debugKeyboard);
 			}
+
+			ImGui::Checkbox("Block keyboard&mouse game input (Shift+F5)", &blockInput);
 
 			ImGui::Separator();
 

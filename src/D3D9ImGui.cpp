@@ -8,7 +8,6 @@
 namespace d3d9_imgui
 {
 	static void (*gDrawCallback)();
-	static int* gMouseWheel;
 
 	static HWND g_hWnd = NULL;
 	static INT64 g_Time = 0;
@@ -229,8 +228,6 @@ namespace d3d9_imgui
 		io.MouseDown[2] = (::GetAsyncKeyState(VK_MBUTTON) & 0x8000) != 0;
 		io.MouseDown[3] = (::GetAsyncKeyState(VK_XBUTTON1) & 0x8000) != 0;
 		io.MouseDown[4] = (::GetAsyncKeyState(VK_XBUTTON2) & 0x8000) != 0;
-
-		io.MouseWheel = *gMouseWheel;
 
 		// Update OS mouse position
 		win32_update_mouse_pos();
@@ -523,8 +520,6 @@ namespace d3d9_imgui
 		MH_CreateHook(hook::get_pattern("55 8B EC 83 E4 F8 83 EC 14 53 8B 5D 08"),
 					  &WndProc_detour,
 					  reinterpret_cast<void**>(&WndProc_orig));
-
-		gMouseWheel = *hook::get_pattern<int*>("A1 ? ? ? ? 85 C0 74 0E 7E 07", 1);
 
 		d3d9_hook::set_present_callback(&present_callback);
 		d3d9_hook::set_pre_reset_callback(&pre_reset_callback);
