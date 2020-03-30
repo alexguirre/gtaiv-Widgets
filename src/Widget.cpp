@@ -65,6 +65,22 @@ namespace ImGui
 		if (window->SkipItems)
 			return false;
 
+		if constexpr (std::is_same_v<T, int>)
+		{
+			// see assert in ImGui::SliderBehavior
+			if (min < (INT_MIN / 2) || max > (INT_MAX / 2))
+			{
+				// fallback to just InputInt without slider
+				int tmp = *v;
+				if (InputInt(label, &tmp, step, step))
+				{
+					*v = std::clamp(tmp, min, max);
+					return true;
+				}
+				return false;
+			}
+		}
+
 		ImGuiContext& g = *GImGui;
 		ImGuiStyle& style = g.Style;
 
@@ -144,6 +160,7 @@ Widget::Widget(WidgetId id, WidgetInfo info)
 
 void Widget::Draw()
 {
+	ImGui::PushID(this);
 	std::visit(overloaded{
 				   [](const auto&) {},
 				   [](WidgetGroup& w) {
@@ -219,6 +236,7 @@ void Widget::Draw()
 				   [](WidgetText& w) { ImGui::InputText(w.Label.c_str(), &w.Value); },
 			   },
 			   mInfo);
+	ImGui::PopID();
 }
 
 WidgetType Widget::GetInfoType(const WidgetInfo& info)
