@@ -39,6 +39,7 @@
     <ClCompile Include="GtaThread.cpp" />
     <ClCompile Include="LogWindow.cpp" />
     <ClCompile Include="ioInput.cpp" />
+    <ClCompile Include="Graphics.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="dependencies">
@@ -107,5 +108,6 @@
     <ClInclude Include="GtaThread.h" />
     <ClInclude Include="LogWindow.h" />
     <ClInclude Include="ioInput.h" />
+    <ClInclude Include="Graphics.h" />
   </ItemGroup>
 </Project>

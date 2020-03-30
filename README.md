@@ -35,6 +35,8 @@ The following natives are reimplemented:
 - SCRIPT_ASSERT
 - IS_KEYBOARD_KEY_PRESSED
 - IS_KEYBOARD_KEY_JUST_PRESSED
+- LINE
+- DRAW_DEBUG_SPHERE
 
 PRINT\*, SAVE\_\*\_TO\_DEBUG_FILE and SCRIPT\_ASSERT natives are redirected to a logs window.
 

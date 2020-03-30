@@ -105,6 +105,7 @@
     <ClCompile Include="D3D9Hook.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="D3D9ImGui.cpp" />
+    <ClCompile Include="Graphics.cpp" />
     <ClCompile Include="GtaThread.cpp" />
     <ClCompile Include="ioInput.cpp" />
     <ClCompile Include="LogWindow.cpp" />
@@ -129,6 +130,7 @@
     <ClInclude Include="..\dependencies\patterns\Hooking.Patterns.h" />
     <ClInclude Include="D3D9Hook.h" />
     <ClInclude Include="D3D9ImGui.h" />
+    <ClInclude Include="Graphics.h" />
     <ClInclude Include="GtaThread.h" />
     <ClInclude Include="ioInput.h" />
     <ClInclude Include="LogWindow.h" />

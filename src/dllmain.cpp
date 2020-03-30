@@ -1,5 +1,6 @@
 #include "D3D9Hook.h"
 #include "D3D9ImGui.h"
+#include "Graphics.h"
 #include "GtaThread.h"
 #include "LogWindow.h"
 #include "WidgetManager.h"
@@ -439,6 +440,46 @@ static void cmdSCRIPT_ASSERT(scrNativeCallContext& ctx)
 	LogWindow::AddPrintLog("[ASSERT] %s", ctx.GetArgument<const char*>(0));
 }
 
+static void queueDrawLine(float x1, float y1, float z1, float x2, float y2, float z2);
+
+static constexpr uint32_t hashLINE{ 0x6C6F6052 };
+static void cmdLINE(scrNativeCallContext& ctx)
+{
+	SPDLOG_DEBUG("LINE({}, {}, {}, {}, {}, {}) [args:{}]",
+				 ctx.GetArgument<float>(0),
+				 ctx.GetArgument<float>(1),
+				 ctx.GetArgument<float>(2),
+				 ctx.GetArgument<float>(3),
+				 ctx.GetArgument<float>(4),
+				 ctx.GetArgument<float>(5),
+				 ctx.GetArgumentCount());
+
+	queueDrawLine(ctx.GetArgument<float>(0),
+				  ctx.GetArgument<float>(1),
+				  ctx.GetArgument<float>(2),
+				  ctx.GetArgument<float>(3),
+				  ctx.GetArgument<float>(4),
+				  ctx.GetArgument<float>(5));
+}
+
+static void queueDrawSphere(float x, float y, float z, float radius);
+
+static constexpr uint32_t hashDRAW_DEBUG_SPHERE{ 0x539572F3 };
+static void cmdDRAW_DEBUG_SPHERE(scrNativeCallContext& ctx)
+{
+	SPDLOG_DEBUG("DRAW_DEBUG_SPHERE({}, {}, {}, {}, {}, {}) [args:{}]",
+				 ctx.GetArgument<float>(0),
+				 ctx.GetArgument<float>(1),
+				 ctx.GetArgument<float>(2),
+				 ctx.GetArgument<float>(3),
+				 ctx.GetArgumentCount());
+
+	queueDrawSphere(ctx.GetArgument<float>(0),
+					ctx.GetArgument<float>(1),
+					ctx.GetArgument<float>(2),
+					ctx.GetArgument<float>(3));
+}
+
 static void ToggleDebugKeyboard(bool enable)
 {
 	static std::array<uint8_t*, 2> addresses = []() {
@@ -458,6 +499,158 @@ static void ToggleDebugKeyboard(bool enable)
 	}
 }
 
+struct LineDrawCall
+{
+	float from[3];
+	float to[3];
+};
+static std::array<LineDrawCall, 512> gLineDrawCalls{};
+static size_t gLineDrawCallsCount;
+static std::array<LineDrawCall, 512> gLineDrawCallsToRender{};
+static size_t gLineDrawCallsToRenderCount;
+
+struct SphereDrawCall
+{
+	float pos[3];
+	float radius;
+};
+static std::array<SphereDrawCall, 512> gSphereDrawCalls{};
+static size_t gSphereDrawCallsCount;
+static std::array<SphereDrawCall, 512> gSphereDrawCallsToRender{};
+static size_t gSphereDrawCallsToRenderCount;
+
+static bool gDrawCommandSubmitted;
+
+static void queueDrawLine(float x1, float y1, float z1, float x2, float y2, float z2)
+{
+	if (gDrawCommandSubmitted)
+	{
+		gLineDrawCallsCount = 0;
+		gSphereDrawCallsCount = 0;
+		gDrawCommandSubmitted = false;
+	}
+
+	if (gLineDrawCallsCount < gLineDrawCalls.size())
+	{
+		LineDrawCall& l = gLineDrawCalls[gLineDrawCallsCount];
+		l.from[0] = x1;
+		l.from[1] = y1;
+		l.from[2] = z1;
+
+		l.to[0] = x2;
+		l.to[1] = y2;
+		l.to[2] = z2;
+
+		gLineDrawCallsCount++;
+	}
+}
+
+static void queueDrawSphere(float x, float y, float z, float radius)
+{
+	if (gDrawCommandSubmitted)
+	{
+		gLineDrawCallsCount = 0;
+		gSphereDrawCallsCount = 0;
+		gDrawCommandSubmitted = false;
+	}
+
+	if (gSphereDrawCallsCount < gSphereDrawCalls.size())
+	{
+		SphereDrawCall& s = gSphereDrawCalls[gSphereDrawCallsCount];
+		s.pos[0] = x;
+		s.pos[1] = y;
+		s.pos[2] = z;
+		s.radius = radius;
+
+		gSphereDrawCallsCount++;
+	}
+}
+
+constexpr int32_t constexpr_ceil(float num)
+{
+	return (static_cast<float>(static_cast<int32_t>(num)) == num) ?
+			   static_cast<int32_t>(num) :
+			   static_cast<int32_t>(num) + ((num > 0) ? 1 : 0);
+}
+
+static void drawSphere(const SphereDrawCall& s)
+{
+	constexpr float Pi{ 3.141592f };
+	constexpr size_t Color{ 0xA0FF0000 };
+
+	// based on https://code.i-harness.com/en/q/754bec
+
+	constexpr size_t Gradation{ 20 };
+
+	for (float alpha = 0.0; alpha < Pi; alpha += Pi / Gradation)
+	{
+		constexpr size_t NumVertices{ constexpr_ceil((2.01f * Pi) / (Pi / Gradation)) * 2 };
+		size_t n = 0;
+		rage::grcBegin(rage::grcDrawMode::TriangleStrip, NumVertices);
+		for (float beta = 0.0f; beta < 2.01f * Pi; beta += Pi / Gradation)
+		{
+			float x, y, z;
+			x = s.pos[0] + s.radius * cos(beta) * sin(alpha);
+			y = s.pos[1] + s.radius * sin(beta) * sin(alpha);
+			z = s.pos[2] + s.radius * cos(alpha);
+			rage::grcVertex(x, y, z, 0.0f, 0.0f, 0.0f, Color, 0.0f, 0.0f);
+			x = s.pos[0] + s.radius * cos(beta) * sin(alpha + Pi / Gradation);
+			y = s.pos[1] + s.radius * sin(beta) * sin(alpha + Pi / Gradation);
+			z = s.pos[2] + s.radius * cos(alpha + Pi / Gradation);
+			rage::grcVertex(x, y, z, 0.0f, 0.0f, 0.0f, Color, 0.0f, 0.0f);
+
+			n += 2;
+		}
+		rage::grcEnd();
+	}
+}
+
+static void (*genericCallbackDC)(void (*cb)(void));
+
+static void (*submitMarkersDrawCommands_orig)();
+static void submitMarkersDrawCommands_detour()
+{
+	submitMarkersDrawCommands_orig();
+
+	memcpy(gLineDrawCallsToRender.data(),
+		   gLineDrawCalls.data(),
+		   sizeof(LineDrawCall) * gLineDrawCallsCount);
+	gLineDrawCallsToRenderCount = gLineDrawCallsCount;
+
+	memcpy(gSphereDrawCallsToRender.data(),
+		   gSphereDrawCalls.data(),
+		   sizeof(SphereDrawCall) * gSphereDrawCallsCount);
+	gSphereDrawCallsToRenderCount = gSphereDrawCallsCount;
+
+	genericCallbackDC([]() {
+		constexpr uint32_t LineColor{ 0xFF0000FF };
+
+		rage::grcBegin(rage::grcDrawMode::LineList, gLineDrawCallsToRenderCount * 2);
+		for (size_t i = 0; i < gLineDrawCallsToRenderCount; i++)
+		{
+			const LineDrawCall& l = gLineDrawCallsToRender[i];
+			// clang-format off
+			rage::grcVertex(l.from[0], l.from[1], l.from[2], 0.0f, 0.0f, 1.0, LineColor, 0.0f, 0.0f);
+			rage::grcVertex(  l.to[0],   l.to[1],   l.to[2], 0.0f, 0.0f, 1.0, LineColor, 0.0f, 0.0f);
+			// clang-format on
+		}
+		rage::grcEnd();
+
+		for (size_t i = 0; i < gSphereDrawCallsToRenderCount; i++)
+		{
+			drawSphere(gSphereDrawCallsToRender[i]);
+		}
+	});
+
+	if (gDrawCommandSubmitted)
+	{
+		gLineDrawCallsCount = 0;
+		gSphereDrawCallsCount = 0;
+		gDrawCommandSubmitted = false;
+	}
+	gDrawCommandSubmitted = true;
+}
+
 static DWORD WINAPI Main(PVOID)
 {
 	// clang-format off
@@ -466,6 +659,14 @@ static DWORD WINAPI Main(PVOID)
 	d3d9_hook::init(); SPDLOG_INFO(" > D3D9 Hook initialized");
 	d3d9_imgui::init(); SPDLOG_INFO(" > D3D9 ImGui initialized");
 	WidgetManager::Init(); SPDLOG_INFO(" > Widget Manager initialized");
+	{
+		genericCallbackDC = reinterpret_cast<decltype(genericCallbackDC)>(hook::get_pattern("56 6A 00 6A 0C E8 ? ? ? ? 8B F0"));
+
+		MH_CreateHook(hook::get_pattern("81 EC ? ? ? ? 83 3D ? ? ? ? ? 0F 28 05 ? ? ? ? 53 56", -0x6),
+			&submitMarkersDrawCommands_detour,
+			reinterpret_cast<void**>(&submitMarkersDrawCommands_orig));
+	}
+	SPDLOG_INFO(" > Draw Line/Sphere Hook initialized");
 	MH_EnableHook(MH_ALL_HOOKS);
 	// clang-format on
 
@@ -516,6 +717,8 @@ static DWORD WINAPI Main(PVOID)
 		N{ hashPRINTNL, &cmdPRINTNL },
 		N{ hashPRINTVECTOR, &cmdPRINTVECTOR },
 		N{ hashSCRIPT_ASSERT, &cmdSCRIPT_ASSERT },
+		N{ hashLINE, &cmdLINE },
+		N{ hashDRAW_DEBUG_SPHERE, &cmdDRAW_DEBUG_SPHERE },
 	};
 	std::for_each(nativesToReplace.begin(), nativesToReplace.end(), replaceNative);
 
